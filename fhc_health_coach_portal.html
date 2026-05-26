@@ -1,0 +1,992 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);color:var(--color-text-primary);font-size:14px;line-height:1.5}
+.shell{display:grid;grid-template-columns:200px 1fr;min-height:560px;border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.sb{background:var(--color-background-secondary);border-right:0.5px solid var(--color-border-tertiary);padding:16px 12px;display:flex;flex-direction:column;gap:2px}
+.brand{padding:4px 8px 14px;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:10px}
+.brand-n{font-size:13px;font-weight:500}
+.brand-s{font-size:11px;color:var(--color-text-secondary)}
+.ng{margin-bottom:10px}
+.nl{font-size:10px;font-weight:500;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:.06em;padding:0 8px;margin-bottom:4px}
+.nb{display:flex;align-items:center;gap:7px;width:100%;padding:6px 8px;background:none;border:none;border-radius:var(--border-radius-md);font-family:var(--font-sans);font-size:12px;color:var(--color-text-secondary);cursor:pointer;text-align:left;transition:all .12s}
+.nb:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+.nb.on{background:var(--color-background-primary);color:var(--color-text-primary);font-weight:500}
+.nb i{font-size:14px;flex-shrink:0}
+.sf{margin-top:auto;padding-top:10px;border-top:0.5px solid var(--color-border-tertiary)}
+.sa{display:flex;align-items:center;gap:8px;padding:6px 8px}
+.av{width:28px;height:28px;border-radius:50%;background:var(--color-background-success);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--color-text-success);flex-shrink:0}
+.an{font-size:12px;font-weight:500}
+.ar{font-size:10px;color:var(--color-text-secondary)}
+.mn{padding:20px 24px;overflow-y:auto;max-height:700px}
+.view{display:none}
+.view.on{display:block}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px;padding-bottom:14px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.pe{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--color-text-danger);margin-bottom:3px}
+.pt{font-size:20px;font-weight:500}
+.pm{font-size:11px;color:var(--color-text-secondary);text-align:right}
+.pn{font-size:18px;font-weight:500;color:var(--color-text-primary);display:block;line-height:1}
+.srow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
+.sc{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;border-left:3px solid var(--acc,#639922)}
+.sl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.06em;color:var(--color-text-secondary);margin-bottom:4px}
+.sv{font-size:22px;font-weight:500;line-height:1}
+.ss{font-size:11px;color:var(--color-text-secondary);margin-top:3px}
+.ss.w{color:var(--color-text-danger)}
+.g2{display:grid;grid-template-columns:1.4fr 1fr;gap:12px;margin-bottom:12px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:12px}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px}
+.ct{font-size:14px;font-weight:500;margin-bottom:2px}
+.cs{font-size:12px;color:var(--color-text-secondary);margin-bottom:12px}
+.rl{list-style:none}
+.ri{display:flex;gap:8px;padding:8px 0;border-bottom:0.5px solid var(--color-border-tertiary)}
+.ri:last-child{border-bottom:none}
+.rtime{font-size:10px;font-family:var(--font-mono);color:var(--color-text-secondary);min-width:42px;padding-top:1px}
+.rc{flex:1}
+.rtl{font-size:12px;font-weight:500;margin-bottom:1px}
+.rd{font-size:11px;color:var(--color-text-secondary)}
+.badge{display:inline-block;font-size:10px;font-weight:500;padding:1px 7px;border-radius:20px;margin-top:3px}
+.bg-s{background:#EAF3DE;color:#3B6D11}
+.bg-c{background:#FAECE7;color:#993C1D}
+.bg-p{background:#FAEEDA;color:#854F0B}
+.bg-r{background:#EEEDFE;color:#534AB7}
+.qb{background:var(--color-background-success);border-radius:var(--border-radius-lg);padding:18px;position:relative;overflow:hidden}
+.qb::before{content:'\201C';position:absolute;top:-16px;right:6px;font-size:100px;line-height:1;opacity:.15;color:var(--color-text-success)}
+.qt{font-size:13px;font-style:italic;line-height:1.5;color:var(--color-text-success);position:relative;z-index:1}
+.qa{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-text-success);opacity:.7;margin-top:8px;position:relative;z-index:1}
+.btn{padding:8px 14px;border-radius:var(--border-radius-md);font-family:var(--font-sans);font-size:12px;font-weight:500;cursor:pointer;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);transition:all .12s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--color-background-secondary);color:var(--color-text-primary)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-p{background:#3B6D11;color:#EAF3DE;border-color:#3B6D11}
+.btn-p:hover{background:#27500A}
+.btn-g{background:#3B6D11;color:#EAF3DE;border-color:#3B6D11;padding:10px 20px;font-size:13px}
+.btn-g:hover{background:#27500A}
+.btn-d{background:#993C1D;color:#FAECE7;border-color:#993C1D;padding:10px 20px;font-size:13px}
+.btn-d:hover{background:#712B13}
+.wnav{display:flex;align-items:center;gap:8px}
+.wb{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);width:26px;height:26px;border-radius:var(--border-radius-md);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--color-text-secondary)}
+.wb:hover{background:var(--color-background-primary);color:var(--color-text-primary)}
+.wl{font-size:13px;font-weight:500;min-width:140px;text-align:center}
+.ws{font-size:10px;color:var(--color-text-secondary);display:block}
+.tbl{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden}
+.tr{display:grid;grid-template-columns:170px repeat(7,1fr) 58px;align-items:center}
+.trh{background:var(--color-background-secondary);border-bottom:0.5px solid var(--color-border-tertiary)}
+.trh .tc{font-size:9px;font-weight:500;letter-spacing:.07em;text-transform:uppercase;color:var(--color-text-secondary);padding:9px 5px;text-align:center;line-height:1.3}
+.trh .tc:first-child{text-align:left}
+.tc{padding:10px 5px;text-align:center;border-bottom:0.5px solid var(--color-border-tertiary);border-right:0.5px solid var(--color-border-tertiary)}
+.tc:last-child{border-right:none}
+.tr:last-child .tc{border-bottom:none}
+.tcc{text-align:left!important;padding-left:12px!important}
+.cn{font-size:12px;font-weight:500;margin-bottom:1px}
+.cst{font-size:10px;color:var(--color-text-secondary)}
+.cca{font-size:10px;color:var(--color-text-danger);margin-top:1px}
+.chk{width:18px;height:18px;border:1.5px solid var(--color-border-secondary);border-radius:4px;cursor:pointer;margin:0 auto;display:flex;align-items:center;justify-content:center;background:var(--color-background-primary);transition:all .12s;color:transparent}
+.chk:hover{border-color:#639922}
+.chk.on{background:#639922;border-color:#639922;color:#EAF3DE}
+.chk i{font-size:11px}
+.dots{display:flex;gap:3px;justify-content:center;cursor:pointer}
+.dot{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--color-border-secondary);background:var(--color-background-primary);transition:all .12s}
+.dot.on{background:#534AB7;border-color:#534AB7}
+.dc{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+.pb{height:4px;background:var(--color-background-secondary);border-radius:2px;overflow:hidden;width:38px;margin:0 auto}
+.pf{height:100%;background:#639922;transition:width .3s}
+.pp{font-size:10px;color:var(--color-text-secondary);margin-top:2px}
+.cgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.ccard{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px;cursor:pointer;transition:all .15s}
+.ccard:hover{border-color:#639922}
+.ch{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.cav{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#fff;flex-shrink:0}
+.av-g{background:#639922}.av-o{background:#BA7517}.av-t{background:#1D9E75}
+.cn2{font-size:13px;font-weight:500}
+.csn{font-size:10px;color:var(--color-text-secondary)}
+.cbg{display:inline-block;font-size:9px;font-weight:500;padding:2px 6px;border-radius:20px;background:#EAF3DE;color:#3B6D11;margin-top:3px}
+.cbg.m{background:#FAEEDA;color:#854F0B}
+.cg{font-size:11px;color:var(--color-text-secondary);line-height:1.5;padding:8px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);margin-bottom:8px;font-style:italic}
+.cf{display:flex;justify-content:space-between;align-items:center;font-size:11px}
+.il{background:#FAEEDA;border:0.5px solid #BA7517;border-left-width:3px;border-radius:var(--border-radius-md);padding:10px 14px;margin-bottom:14px;display:flex;gap:8px;font-size:12px;color:var(--color-text-primary)}
+.ii{color:#BA7517;font-weight:500;flex-shrink:0}
+.ish{display:grid;grid-template-columns:170px 1fr;gap:14px}
+.isn{background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px;height:fit-content}
+.inl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-tertiary);margin-bottom:8px}
+.is{display:flex;align-items:center;gap:7px;width:100%;padding:6px 7px;background:none;border:none;border-radius:var(--border-radius-md);font-family:var(--font-sans);font-size:12px;cursor:pointer;text-align:left;transition:all .12s;margin-bottom:2px}
+.is:hover{background:var(--color-background-primary)}
+.is.on{background:var(--color-background-primary)}
+.isn2{width:20px;height:20px;border-radius:50%;background:var(--color-background-secondary);border:1.5px solid var(--color-border-secondary);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--color-text-secondary);flex-shrink:0;transition:all .15s}
+.is.on .isn2{background:#3B6D11;color:#EAF3DE;border-color:#3B6D11}
+.is.done .isn2{background:#EAF3DE;color:#3B6D11;border-color:#EAF3DE}
+.isl{font-size:11px;font-weight:500;color:var(--color-text-secondary)}
+.is.on .isl{color:var(--color-text-primary)}
+.iss{font-size:10px;color:var(--color-text-tertiary)}
+.ipb{margin-top:12px;padding-top:10px;border-top:0.5px solid var(--color-border-tertiary)}
+.ipbl{font-size:10px;color:var(--color-text-tertiary);margin-bottom:4px}
+.ipbar{height:3px;background:var(--color-border-secondary);border-radius:2px;overflow:hidden}
+.ipbf{height:100%;background:#639922;transition:width .4s}
+.ipbt{font-size:10px;color:var(--color-text-secondary);margin-top:3px}
+.ipan{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:20px}
+.isec{display:none}
+.isec.on{display:block}
+.ise{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:var(--color-text-danger);margin-bottom:3px}
+.ist{font-size:18px;font-weight:500;margin-bottom:3px}
+.isb{font-size:12px;color:var(--color-text-secondary);margin-bottom:16px;padding-bottom:12px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.fg{margin-bottom:14px}
+.fr{display:grid;gap:12px;margin-bottom:14px}
+.fr.c2{grid-template-columns:1fr 1fr}
+.fr.c3{grid-template-columns:1fr 1fr 1fr}
+.fr.c4{grid-template-columns:1fr 1fr 1fr 1fr}
+.fl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-primary);margin-bottom:5px;display:block}
+.fl span{font-style:italic;font-weight:400;text-transform:none;letter-spacing:0;color:var(--color-text-secondary);font-size:10px}
+input.fi,select.fi,textarea.fi{width:100%;background:var(--color-background-secondary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);padding:8px 10px;font-family:var(--font-sans);font-size:12px;color:var(--color-text-primary);outline:none;transition:all .12s;appearance:none}
+input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:#639922;background:var(--color-background-primary)}
+textarea.fi{resize:vertical;min-height:70px;line-height:1.5}
+.fh{font-size:10px;color:var(--color-text-tertiary);margin-top:3px;font-style:italic}
+.fdiv{border:none;border-top:0.5px dashed var(--color-border-tertiary);margin:16px 0}
+.fst{font-size:14px;font-weight:500;margin-bottom:2px}
+.fss{font-size:12px;color:var(--color-text-secondary);margin-bottom:12px}
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.to{padding:5px 10px;border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:11px;color:var(--color-text-secondary);cursor:pointer;transition:all .12s;user-select:none}
+.to:hover{border-color:#639922;color:var(--color-text-primary)}
+.to.sel{background:#EAF3DE;border-color:#639922;color:#3B6D11;font-weight:500}
+.ibtns{display:flex;gap:8px;margin-top:18px;padding-top:14px;border-top:0.5px solid var(--color-border-tertiary)}
+.rvg{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:16px}
+.rvc{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px}
+.rvl{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-danger);margin-bottom:3px}
+.rvv{font-size:12px;font-weight:500;margin-bottom:1px}
+.rvs{font-size:11px;color:var(--color-text-secondary)}
+.ald{display:none;text-align:center;padding:32px 16px}
+.ald.on{display:block}
+.sp{width:32px;height:32px;border:2.5px solid var(--color-border-secondary);border-top-color:#639922;border-radius:50%;animation:spin 1s linear infinite;margin:0 auto 14px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.alt{font-size:16px;font-weight:500;margin-bottom:4px}
+.als{font-size:12px;color:var(--color-text-secondary)}
+.alst{list-style:none;margin-top:12px;display:inline-block;text-align:left}
+.alst li{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--color-text-secondary);padding:3px 0}
+.alst li.done{color:#3B6D11}
+.alst li.act{color:var(--color-text-primary);font-weight:500}
+.sdot{width:5px;height:5px;border-radius:50%;background:var(--color-border-secondary);flex-shrink:0}
+.alst li.done .sdot{background:#639922}
+.alst li.act .sdot{background:#993C1D;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.rpt{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);overflow:hidden;margin-top:12px}
+.rph{background:#3B6D11;color:#EAF3DE;padding:22px 26px}
+.rpe{font-size:9px;letter-spacing:.1em;text-transform:uppercase;opacity:.75;margin-bottom:5px}
+.rpn{font-size:20px;font-weight:500;margin-bottom:2px}
+.rpd{font-size:10px;opacity:.65}
+.rpst{display:grid;grid-template-columns:repeat(4,1fr);border-top:0.5px solid rgba(255,255,255,.2);margin-top:14px}
+.rpsc{padding:10px;border-right:0.5px solid rgba(255,255,255,.2)}
+.rpsc:last-child{border-right:none}
+.rpsl{font-size:9px;letter-spacing:.08em;text-transform:uppercase;opacity:.7;margin-bottom:2px}
+.rpsv{font-size:13px;font-weight:500}
+.rpb{padding:22px 26px}
+.rps{margin-bottom:18px;padding-bottom:18px;border-bottom:0.5px solid var(--color-border-tertiary)}
+.rps:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.rpsl2{font-size:9px;font-weight:500;letter-spacing:.09em;text-transform:uppercase;color:var(--color-text-danger);margin-bottom:5px}
+.rptt{font-size:16px;font-weight:500;margin-bottom:6px}
+.rptx{font-size:12px;color:var(--color-text-secondary);line-height:1.65}
+.mac{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0}
+.mc{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;border-top:2px solid var(--mc)}
+.mcl{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+.mcv{font-size:16px;font-weight:500;margin-bottom:3px}
+.mcn{font-size:10px;color:var(--color-text-secondary);line-height:1.4;font-style:italic}
+.clb{background:#EAF3DE;border-radius:var(--border-radius-md);padding:18px;margin-top:12px}
+.clbe{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#3B6D11;opacity:.8;margin-bottom:6px}
+.clbt{font-size:13px;font-style:italic;line-height:1.55;color:#3B6D11}
+.tl{overflow-x:auto;padding:16px 0}
+.tlt{display:grid;grid-template-columns:repeat(7,1fr);position:relative;min-width:560px}
+.tlt::before{content:'';position:absolute;top:22px;left:7%;right:7%;height:1px;background:var(--color-border-secondary)}
+.tln{text-align:center;position:relative;z-index:1;cursor:pointer;transition:transform .12s;padding:0 3px}
+.tln:hover{transform:translateY(-2px)}
+.tld{width:44px;height:44px;margin:0 auto 8px;border-radius:50%;background:var(--color-background-primary);border:1.5px solid var(--color-border-secondary);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:500;color:var(--color-text-secondary);transition:all .15s}
+.tln.done .tld{background:#EAF3DE;color:#3B6D11;border-color:#EAF3DE}
+.tln.act .tld{background:#3B6D11;color:#EAF3DE;border-color:#3B6D11;box-shadow:0 0 0 4px #EAF3DE}
+.tldy{font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-danger);margin-bottom:2px}
+.tll{font-size:10px;font-weight:500;line-height:1.3;margin-bottom:1px}
+.tls{font-size:9px;color:var(--color-text-secondary)}
+.obd{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:18px;margin-top:12px}
+.tbox{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;font-family:var(--font-mono);font-size:11px;line-height:1.65;color:var(--color-text-secondary);white-space:pre-wrap;position:relative;margin-bottom:10px}
+.cpb{position:absolute;top:8px;right:8px;padding:3px 8px;background:var(--color-background-primary);border:0.5px solid var(--color-border-secondary);border-radius:var(--border-radius-md);font-size:10px;cursor:pointer;color:var(--color-text-secondary);font-family:var(--font-sans)}
+.cpb:hover{color:var(--color-text-primary)}
+.cpb.cp{background:#EAF3DE;color:#3B6D11;border-color:#EAF3DE}
+.chl{list-style:none}
+.chi{display:flex;align-items:flex-start;gap:7px;padding:5px 0;font-size:12px;color:var(--color-text-secondary);border-bottom:0.5px dashed var(--color-border-tertiary)}
+.chi:last-child{border-bottom:none}
+.chi::before{content:'';width:12px;height:12px;border:1.5px solid #639922;border-radius:3px;flex-shrink:0;margin-top:2px}
+.og2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.dr{display:grid;grid-template-columns:70px 1fr;gap:10px;padding:10px 0;border-bottom:0.5px dashed var(--color-border-tertiary);align-items:start}
+.dr:last-child{border-bottom:none}
+.drd{font-size:15px;font-style:italic;font-weight:500;color:#3B6D11}
+.drt{font-size:12px;font-weight:500;margin-bottom:2px}
+.drs{font-size:11px;color:var(--color-text-secondary);line-height:1.5}
+.tw{background:#EAF3DE;border-radius:var(--border-radius-lg);padding:20px}
+.twe{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#3B6D11;opacity:.75;margin-bottom:6px}
+.twt{font-size:18px;font-weight:500;color:#27500A;margin-bottom:8px}
+.twg{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px}
+.twcl{font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#3B6D11;opacity:.75;margin-bottom:6px}
+.twli{font-size:11px;color:#27500A;padding:2px 0}
+.ws2{display:flex;gap:3px;margin-top:12px}
+.wsc{flex:1;height:5px;border-radius:2px;background:rgba(59,109,17,.2)}
+.wsc.f{background:#3B6D11}
+.wsc.cu{background:#BA7517}
+.rtabs{display:flex;gap:1px;border-bottom:0.5px solid var(--color-border-tertiary);margin-bottom:14px;overflow-x:auto}
+.rt{background:none;border:none;padding:8px 12px;font-family:var(--font-sans);font-size:11px;font-weight:500;color:var(--color-text-secondary);cursor:pointer;border-bottom:2px solid transparent;transition:all .12s;white-space:nowrap}
+.rt:hover{color:var(--color-text-primary)}
+.rt.on{color:#3B6D11;border-bottom-color:#3B6D11}
+.rgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rc2{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px;transition:all .15s;cursor:pointer}
+.rc2:hover{border-color:#639922;transform:translateY(-1px)}
+.rtype{display:inline-block;font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;padding:2px 6px;border-radius:20px;background:var(--color-background-secondary);color:var(--color-text-secondary);margin-bottom:7px}
+.rc2.pdf .rtype{background:#FAECE7;color:#993C1D}
+.rc2.email .rtype{background:#EAF3DE;color:#3B6D11}
+.rc2.template .rtype{background:#EAF3DE;color:#3B6D11}
+.rc2.protocol .rtype{background:#EEEDFE;color:#534AB7}
+.rc2.tool .rtype{background:#FAEEDA;color:#854F0B}
+.rnm{font-size:12px;font-weight:500;margin-bottom:3px}
+.rdesc{font-size:10px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:8px}
+.ract{display:flex;gap:5px;padding-top:8px;border-top:0.5px solid var(--color-border-tertiary)}
+.rb{flex:1;padding:4px;border-radius:var(--border-radius-md);font-size:10px;font-weight:500;cursor:pointer;border:0.5px solid var(--color-border-secondary);background:var(--color-background-primary);color:var(--color-text-secondary);transition:all .12s;font-family:var(--font-sans)}
+.rb:hover{background:#EAF3DE;border-color:#639922;color:#3B6D11}
+.rb.p{background:#3B6D11;color:#EAF3DE;border-color:#3B6D11}
+.rb.p:hover{background:#27500A}
+.pbg{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pbc{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:16px}
+.pbtg{display:inline-block;font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;padding:3px 7px;border-radius:var(--border-radius-md);background:var(--at);color:var(--ac);margin-bottom:8px}
+.pbt{font-size:14px;font-weight:500;margin-bottom:8px}
+.pbt em{font-style:italic;color:#3B6D11}
+.pbst{list-style:none;counter-reset:s}
+.pbst li{counter-increment:s;padding:6px 0 6px 20px;position:relative;border-bottom:0.5px dashed var(--color-border-tertiary);font-size:11px;color:var(--color-text-secondary);line-height:1.5}
+.pbst li:last-child{border-bottom:none}
+.pbst li::before{content:counter(s);position:absolute;left:0;top:6px;font-size:12px;font-style:italic;color:#993C1D;font-weight:500}
+#toast{position:absolute;bottom:12px;right:12px;background:var(--color-text-primary);color:var(--color-background-primary);padding:8px 14px;border-radius:var(--border-radius-md);font-size:12px;font-weight:500;opacity:0;transform:translateY(10px);transition:all .25s;pointer-events:none;z-index:99}
+#toast.on{opacity:1;transform:translateY(0)}
+</style>
+
+<h2 class="sr-only">Function Health Club Health Coach Portal — weekly tracker, AI-powered intake assessment with report generation, onboarding timeline, and resource library.</h2>
+
+<div style="position:relative">
+<div class="shell">
+<aside class="sb">
+  <div class="brand"><div class="brand-n">Function Health Club</div><div class="brand-s">Coach Portal</div></div>
+  <div class="ng">
+    <div class="nl">Daily</div>
+    <button class="nb on" data-v="dash"><i class="ti ti-layout-grid" aria-hidden="true"></i>Today</button>
+    <button class="nb" data-v="tracker"><i class="ti ti-calendar-week" aria-hidden="true"></i>Weekly tracker</button>
+    <button class="nb" data-v="clients"><i class="ti ti-users" aria-hidden="true"></i>Clients</button>
+  </div>
+  <div class="ng">
+    <div class="nl">Client lifecycle</div>
+    <button class="nb" data-v="intake"><i class="ti ti-clipboard-text" aria-hidden="true"></i>Intake assessment</button>
+    <button class="nb" data-v="onboard"><i class="ti ti-timeline" aria-hidden="true"></i>Onboarding</button>
+    <button class="nb" data-v="ongoing"><i class="ti ti-refresh" aria-hidden="true"></i>Ongoing flow</button>
+  </div>
+  <div class="ng">
+    <div class="nl">Materials</div>
+    <button class="nb" data-v="resources"><i class="ti ti-books" aria-hidden="true"></i>Resource library</button>
+    <button class="nb" data-v="playbook"><i class="ti ti-layers-subtract" aria-hidden="true"></i>Coach playbook</button>
+  </div>
+  <div class="sf"><div class="sa"><div class="av">MA</div><div><div class="an">Marissa</div><div class="ar">Health Coach · Lead</div></div></div></div>
+</aside>
+
+<main class="mn">
+
+<div class="view on" id="v-dash">
+  <div class="ph"><div><div class="pe" id="de">Wednesday · Nuanced communications day</div><div class="pt">Good morning, Marissa.</div></div><div class="pm"><span class="pn">7</span>active clients</div></div>
+  <div class="srow">
+    <div class="sc" style="--acc:#639922"><div class="sl">Sessions today</div><div class="sv">2</div><div class="ss">Theo · Initial assessment</div></div>
+    <div class="sc" style="--acc:#534AB7"><div class="sl">CoachRx touchpoints</div><div class="sv">14<span style="font-size:15px;color:var(--color-text-secondary)">/21</span></div><div class="ss">7 due by Friday</div></div>
+    <div class="sc" style="--acc:#BA7517"><div class="sl">Week completion</div><div class="sv">76%</div><div class="ss">On pace</div></div>
+    <div class="sc" style="--acc:#993C1D"><div class="sl">12-wk reviews due</div><div class="sv">2</div><div class="ss w">Kathleen · May 22</div></div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="ct">Today's rhythm</div><div class="cs">Wednesday — nuanced CoachRx touches. Short, specific, personal.</div>
+      <ul class="rl">
+        <li class="ri"><div class="rtime">08:30</div><div class="rc"><div class="rtl">Morning prep</div><div class="rd">Review CoachRx logs — Kathleen, James, Bea, Renée, Arun.</div><span class="badge bg-p">Prep</span></div></li>
+        <li class="ri"><div class="rtime">09:30</div><div class="rc"><div class="rtl">CoachRx mid-week touches</div><div class="rd">Specific praise + one micro-adjustment per client.</div><span class="badge bg-r">CoachRx</span></div></li>
+        <li class="ri"><div class="rtime">11:30</div><div class="rc"><div class="rtl">James Park · Biweekly check-in</div><div class="rd">Wk 8/12. Macros, weekend strategy, fatigue trends.</div><span class="badge bg-s">Session</span></div></li>
+        <li class="ri"><div class="rtime">15:30</div><div class="rc"><div class="rtl">Theo Aldridge · Initial assessment</div><div class="rd">75 min. Use Intake Assessment tab after to generate report.</div><span class="badge bg-s">Session</span></div></li>
+        <li class="ri"><div class="rtime">17:00</div><div class="rc"><div class="rtl">Edit Kathleen's CoachRx check-in</div><div class="rd">Tune prompts for protein + 3pm energy ahead of 12-wk review.</div><span class="badge bg-r">CoachRx</span></div></li>
+      </ul>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="qb"><div class="qt">"Relationship building is the biggest piece of client success. The plan is the floor — the relationship is the ceiling."</div><div class="qa">FHC Coaching Principle 01</div></div>
+      <div class="card" style="padding:12px"><div class="ct" style="margin-bottom:10px">Needs your attention</div>
+        <ul class="rl">
+          <li class="ri"><div class="rtime" style="color:var(--color-text-danger)">●</div><div class="rc"><div class="rtl">Bea — only 1 touchpoint this week</div><div class="rd">Below 2-3 minimum. Send warm-pulse before Friday.</div></div></li>
+          <li class="ri"><div class="rtime" style="color:#BA7517">●</div><div class="rc"><div class="rtl">Kathleen — 12-wk review next Wed</div><div class="rd">Begin progress visual now. Pull data from CoachRx.</div></div></li>
+          <li class="ri"><div class="rtime" style="color:var(--color-text-danger)">●</div><div class="rc"><div class="rtl">Renée flagged "stuck" in CoachRx</div><div class="rd">Review plateau protocol before Friday's session.</div></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="g3">
+    <div class="card"><div class="ct">This week's intention</div><p style="font-size:12px;color:var(--color-text-secondary);line-height:1.6;margin-top:6px"><em style="color:#3B6D11">Specific over generic.</em> Every CoachRx reply names one detail they wouldn't expect you to remember.</p></div>
+    <div class="card"><div class="ct">Client wins · 7 days</div><ul style="list-style:none;font-size:11px;line-height:2;color:var(--color-text-secondary);margin-top:6px"><li>· <strong>Kathleen</strong> — 150g protein 6/7 days</li><li>· <strong>James</strong> — cooked dinner 4 nights</li><li>· <strong>Bea</strong> — first weighted walk done</li></ul></div>
+    <div class="card"><div class="ct">Communication rhythm</div><p style="font-size:11px;color:var(--color-text-secondary);line-height:1.8;margin-top:6px"><strong style="color:var(--color-text-primary)">Mon:</strong> Big check-in pulse<br/><strong style="color:var(--color-text-primary)">Wed:</strong> Nuanced touch <em>(today)</em><br/><strong style="color:var(--color-text-primary)">Fri:</strong> Weekend prep + reflection</p></div>
+  </div>
+</div>
+
+<div class="view" id="v-tracker">
+  <div class="ph"><div><div class="pe">Coach operating system</div><div class="pt">Weekly tracker</div></div><div class="pm">The minimum every client gets —<br/>so no one slips through.</div></div>
+  <div class="il"><div class="ii">i</div><div><strong>CoachRx touchpoints</strong> — click dots to log each of 2-3 weekly replies inside CoachRx. Other columns are done/not-done. Resets each week.</div></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px;flex-wrap:wrap">
+    <div class="wnav"><button class="wb" id="wp" aria-label="Previous week"><i class="ti ti-chevron-left" aria-hidden="true"></i></button><div class="wl"><span id="wt">Week of May 12</span><span class="ws" id="wsub">Week 19 · 2026</span></div><button class="wb" id="wn" aria-label="Next week"><i class="ti ti-chevron-right" aria-hidden="true"></i></button></div>
+    <button class="btn" id="wr">Reset week</button>
+  </div>
+  <div class="tbl" id="tbl"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;font-size:11px">
+    <div class="card" style="padding:10px"><strong style="display:block;margin-bottom:2px">CoachRx touchpoints</strong><span style="color:var(--color-text-secondary)">2-3 specific replies to client logs per week. The relationship-builder. Non-negotiable.</span></div>
+    <div class="card" style="padding:10px"><strong style="display:block;margin-bottom:2px">Care touch</strong><span style="color:var(--color-text-secondary)">One human moment beyond protocol — voice note, article, recognition. The one most coaches drop. Don't.</span></div>
+    <div class="card" style="padding:10px"><strong style="display:block;margin-bottom:2px">Mon/Fri big pulses</strong><span style="color:var(--color-text-secondary)">Mon opens the week. Fri closes it with weekend strategy + data reflection.</span></div>
+    <div class="card" style="padding:10px"><strong style="display:block;margin-bottom:2px">Next booked</strong><span style="color:var(--color-text-secondary)">Next session confirmed before this one ends. No "I'll send a time later."</span></div>
+  </div>
+</div>
+
+<div class="view" id="v-clients">
+  <div class="ph"><div><div class="pe">Active roster</div><div class="pt">Clients</div></div><div class="pm"><span class="pn">7</span>active engagements</div></div>
+  <div class="cgrid" id="cg"></div>
+  <div style="margin-top:14px" class="card"><div class="ct">Adding a client</div><p style="font-size:12px;color:var(--color-text-secondary);line-height:1.6;margin-top:6px">Create the profile, then open <strong>Intake Assessment</strong> to complete the assessment and auto-generate their personalized report — no copy-paste required.</p><button class="btn btn-p" style="margin-top:10px" onclick="toast('New client intake form')"><i class="ti ti-plus" aria-hidden="true"></i>Add new client</button></div>
+</div>
+
+<div class="view" id="v-intake">
+  <div class="ph"><div><div class="pe">Client lifecycle · Step 01</div><div class="pt">Intake assessment</div></div><div class="pm">Complete the form, generate the report.<br/><strong>No copy-paste required.</strong></div></div>
+  <div class="ish">
+    <div class="isn">
+      <div class="inl">Sections</div>
+      <button class="is on" data-s="0"><span class="isn2">1</span><div><div class="isl">Client info</div><div class="iss">Basics & snapshot</div></div></button>
+      <button class="is" data-s="1"><span class="isn2">2</span><div><div class="isl">Goals & nutrition</div><div class="iss">Targets & history</div></div></button>
+      <button class="is" data-s="2"><span class="isn2">3</span><div><div class="isl">Training & movement</div><div class="iss">Output & recovery</div></div></button>
+      <button class="is" data-s="3"><span class="isn2">4</span><div><div class="isl">Lifestyle & habits</div><div class="iss">Sleep, stress, cravings</div></div></button>
+      <button class="is" data-s="4"><span class="isn2">5</span><div><div class="isl">Review & generate</div><div class="iss">Build the report</div></div></button>
+      <div class="ipb"><div class="ipbl">Progress</div><div class="ipbar"><div class="ipbf" id="ipf" style="width:20%"></div></div><div class="ipbt" id="ipt">Step 1 of 5</div></div>
+    </div>
+    <div class="ipan">
+      <div class="isec on" id="is-0">
+        <div class="ise">Section 01</div><div class="ist">Client info</div><p class="isb">Baseline snapshot — confirmed at the start of the assessment session.</p>
+        <div class="fr c2"><div><label class="fl">First name</label><input class="fi" id="f-fn" placeholder="e.g. Kathleen"/></div><div><label class="fl">Last name</label><input class="fi" id="f-ln" placeholder="e.g. Sullivan"/></div></div>
+        <div class="fr c4"><div><label class="fl">Date</label><input class="fi" type="date" id="f-dt"/></div><div><label class="fl">Age</label><input class="fi" type="number" id="f-age" placeholder="42"/></div><div><label class="fl">Sex</label><select class="fi" id="f-sex"><option value="">Select</option><option>Female</option><option>Male</option><option>Other</option></select></div><div><label class="fl">Height</label><input class="fi" id="f-ht" placeholder="5'8&quot;"/></div></div>
+        <div class="fr c3"><div><label class="fl">Current weight</label><input class="fi" id="f-wt" placeholder="187 lbs"/></div><div><label class="fl">Est. TDEE <span>(cal/day)</span></label><input class="fi" type="number" id="f-tdee" placeholder="2400"/></div><div><label class="fl">Goal weight <span>(optional)</span></label><input class="fi" id="f-gwt" placeholder="172 lbs"/></div></div>
+        <div class="fg"><label class="fl">Activity level</label><select class="fi" id="f-act"><option value="">Select</option><option>Sedentary (desk job, little movement)</option><option>Lightly active (walks, light exercise 1-2x/wk)</option><option>Moderately active (3-4x/wk structured training)</option><option>Active (5+ days training, physical job)</option><option>Very active (daily intense training, athlete)</option></select></div>
+        <div class="fg"><label class="fl">Training description <span>(client's words)</span></label><textarea class="fi" id="f-td" placeholder="e.g. CrossFit 3-4 mornings a week and 30-45 min walk most days..."></textarea></div>
+        <div class="fg"><label class="fl">Medical notes <span>(diagnoses, medications)</span></label><textarea class="fi" id="f-med" placeholder="e.g. No diagnoses. Takes magnesium and vitamin D..." style="min-height:55px"></textarea></div>
+        <div class="ibtns"><button class="btn btn-p" onclick="goS(1)">Continue <i class="ti ti-arrow-right" aria-hidden="true"></i></button></div>
+      </div>
+      <div class="isec" id="is-1">
+        <div class="ise">Section 02</div><div class="ist">Goals & nutrition</div><p class="isb">Primary objective, nutrition history, and targets that flow directly into the report.</p>
+        <div class="fg"><label class="fl">Primary goal <span>(use their language)</span></label><textarea class="fi" id="f-goal" placeholder="e.g. Body recomposition — lose fat while keeping the muscle I've built through CrossFit. I want to feel strong and lean, not just lighter..."></textarea></div>
+        <div class="fg"><label class="fl">What does success look and feel like?</label><textarea class="fi" id="f-succ" placeholder="e.g. Wake up with energy, stop having the 3pm crash, feel proud when I look in the mirror..."></textarea></div>
+        <div class="fg"><label class="fl">Strengths already in place <span>(positive framing)</span></label><textarea class="fi" id="f-str" placeholder="e.g. Already training consistently 3-4x/week. Drinks 40oz water daily. Avoids fasted training..."></textarea></div>
+        <hr class="fdiv"/>
+        <div class="fst">Nutrition targets</div><div class="fss">These numbers flow directly into the generated report.</div>
+        <div class="fr c2"><div><label class="fl">Daily calorie target</label><input class="fi" id="f-cal" placeholder="e.g. 2,100-2,200 cal"/><div class="fh">10-15% deficit for fat loss</div></div><div><label class="fl">Calorie strategy note</label><textarea class="fi" id="f-caln" placeholder="e.g. A modest 10-15% deficit from TDEE — enough to drive fat loss without compromising muscle..." style="min-height:55px"></textarea></div></div>
+        <div class="fr c3"><div><label class="fl">Protein</label><input class="fi" id="f-pro" placeholder="e.g. 150-187g"/><div class="fh">0.8-1g per lb bodyweight</div></div><div><label class="fl">Carbohydrates</label><input class="fi" id="f-carb" placeholder="e.g. 190-220g"/></div><div><label class="fl">Fats</label><input class="fi" id="f-fat" placeholder="e.g. 55-70g"/></div></div>
+        <div class="fg"><label class="fl">Macro rationale</label><textarea class="fi" id="f-macr" placeholder="e.g. High protein critical for women 40+ to overcome anabolic resistance. Carbs timed around CrossFit for performance..."></textarea></div>
+        <div class="fg"><label class="fl">Meal architecture</label><textarea class="fi" id="f-meal" placeholder="e.g. POWER LUNCH = biggest carb bolus + full protein serving. DINNER = high-fibre veg + lean protein..."></textarea></div>
+        <div class="fg"><label class="fl">Practical tool recommendation</label><input class="fi" id="f-tool" placeholder="e.g. Invest in a kitchen scale — visual estimates vs. weighing 6oz chicken can be 20-30g protein difference"/></div>
+        <div class="ibtns"><button class="btn" onclick="goS(0)"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back</button><button class="btn btn-p" onclick="goS(2)">Continue <i class="ti ti-arrow-right" aria-hidden="true"></i></button></div>
+      </div>
+      <div class="isec" id="is-2">
+        <div class="ise">Section 03</div><div class="ist">Training & movement</div><p class="isb">Current output, recommendations, protein timing, and supplements.</p>
+        <div class="fr c2"><div><label class="fl">Primary training type</label><select class="fi" id="f-tt"><option value="">Select</option><option>CrossFit / Functional fitness</option><option>Weightlifting / Powerlifting</option><option>Bodybuilding / Hypertrophy</option><option>Running / Endurance</option><option>HIIT / Group fitness</option><option>Mixed / General fitness</option><option>Minimal / Just starting</option></select></div><div><label class="fl">Frequency</label><select class="fi" id="f-tf"><option value="">Select</option><option>1-2x per week</option><option>3-4x per week</option><option>5-6x per week</option><option>Daily</option><option>Inconsistent</option></select></div></div>
+        <div class="fg"><label class="fl">Training recommendation <span>(for report)</span></label><textarea class="fi" id="f-trec" placeholder="e.g. Keep CrossFit at 3-4x per week — current output is spot on for recomp goals. Progressive overload within sessions is the lever, not more frequency..."></textarea></div>
+        <div class="fg"><label class="fl">Zone 2 / recovery movement</label><textarea class="fi" id="f-z2" placeholder="e.g. Brisk walks, weighted vest walks, light cycling on off-days. Allows the body to recover from CrossFit intensity while still burning fat..."></textarea></div>
+        <hr class="fdiv"/>
+        <div class="fst">Protein timing</div><div class="fss">Tied to their training schedule.</div>
+        <div class="fr c2"><div><label class="fl">Pre-workout</label><textarea class="fi" id="f-pre" placeholder="e.g. ~15g protein — sourdough + cottage cheese. Avoid fasted training for cortisol management." style="min-height:60px"></textarea></div><div><label class="fl">Post-workout</label><textarea class="fi" id="f-post" placeholder="e.g. 30-40g within 45 min — protein shake with oats blended in." style="min-height:60px"></textarea></div></div>
+        <div class="fr c2"><div><label class="fl">~3:30 PM bridge</label><textarea class="fi" id="f-aft" placeholder="e.g. Greek yogurt + berries or turkey wrap. Blunts evening cravings and prevents the energy crash." style="min-height:60px"></textarea></div><div><label class="fl">Evening strategy</label><textarea class="fi" id="f-eve" placeholder="e.g. Choose wine OR a small treat, not both. Combining raises pro-inflammatory load." style="min-height:60px"></textarea></div></div>
+        <hr class="fdiv"/>
+        <div class="fr c2"><div><label class="fl">Hydration protocol</label><input class="fi" id="f-hyd" placeholder="e.g. 40oz lemon water daily + pinch sea salt"/></div><div><label class="fl">Supplement stack <span>(select all)</span></label><div class="tags" id="sup-tags"><span class="to" data-v="Vitamin D">Vitamin D</span><span class="to" data-v="Magnesium">Magnesium</span><span class="to" data-v="Vitamin B Complex">Vitamin B Complex</span><span class="to" data-v="Creatine">Creatine</span><span class="to" data-v="Omega-3">Omega-3</span><span class="to" data-v="Protein Powder">Protein Powder</span><span class="to" data-v="Probiotics">Probiotics</span><span class="to" data-v="Collagen">Collagen</span></div><input class="fi" id="f-supx" placeholder="+ other supplements..." style="margin-top:6px"/></div></div>
+        <div class="ibtns"><button class="btn" onclick="goS(1)"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back</button><button class="btn btn-p" onclick="goS(3)">Continue <i class="ti ti-arrow-right" aria-hidden="true"></i></button></div>
+      </div>
+      <div class="isec" id="is-3">
+        <div class="ise">Section 04</div><div class="ist">Lifestyle & habits</div><p class="isb">Sleep, stress, cravings, and Week 1 focus metrics.</p>
+        <div class="fr c2"><div><label class="fl">Sleep quality</label><select class="fi" id="f-slq"><option value="">Select</option><option>Excellent (7-9hrs, wake refreshed)</option><option>Good (6-7hrs, mostly restful)</option><option>Fair (5-6hrs or disrupted)</option><option>Poor (under 5hrs or severely disrupted)</option></select></div><div><label class="fl">Average sleep hours</label><input class="fi" type="number" id="f-slh" placeholder="e.g. 6.5" min="3" max="12" step="0.5"/></div></div>
+        <div class="fg"><label class="fl">Top 3 stressors <span>(their words)</span></label><textarea class="fi" id="f-stress" placeholder="e.g. 1) Demanding work deadlines  2) Managing kids' schedules  3) Financial pressure..." style="min-height:60px"></textarea></div>
+        <div class="fg"><label class="fl">Craving patterns <span>(when, what, triggers)</span></label><textarea class="fi" id="f-crav" placeholder="e.g. Evening sweets after dinner or a glass of wine. Worse on high-stress days..."></textarea></div>
+        <hr class="fdiv"/>
+        <div class="fst">Craving alternatives <span style="font-size:12px;font-weight:400;color:var(--color-text-secondary)">(click to select)</span></div>
+        <div class="tags" id="alt-tags"><span class="to sel" data-v="SmartSweets">SmartSweets</span><span class="to sel" data-v="Mid-Day Squares">Mid-Day Squares</span><span class="to sel" data-v="RXBAR">RXBAR</span><span class="to" data-v="Quest Bar">Quest Bar</span><span class="to" data-v="Greek Yogurt + Honey">Greek Yogurt + Honey</span><span class="to" data-v="Dark Chocolate (85%+)">Dark Chocolate (85%+)</span><span class="to" data-v="Rice Cakes + PB">Rice Cakes + PB</span><span class="to" data-v="Protein Ice Cream">Protein Ice Cream</span></div>
+        <div class="fg" style="margin-top:10px"><label class="fl">Craving guideline note</label><textarea class="fi" id="f-cravn" placeholder="e.g. Choose one evening treat — not combined with wine. SmartSweets for light; RXBAR when more filling needed..."></textarea></div>
+        <hr class="fdiv"/>
+        <div class="fst">Week 1 focus metrics</div><div class="fss">Three daily check-ins for the client. Signal, not score.</div>
+        <div class="fr c3">
+          <div><label class="fl">Metric 1</label><input class="fi" id="f-m1" value="Daily Protein"/><input class="fi" id="f-m1d" placeholder="Hit 150g or more. Non-negotiable." style="margin-top:5px"/></div>
+          <div><label class="fl">Metric 2</label><input class="fi" id="f-m2" value="3pm Energy Score"/><input class="fi" id="f-m2d" placeholder="Rate 1-10 at 3pm each day." style="margin-top:5px"/></div>
+          <div><label class="fl">Metric 3</label><input class="fi" id="f-m3" value="Recovery Quality"/><input class="fi" id="f-m3d" placeholder="Note sleep, soreness, mood." style="margin-top:5px"/></div>
+        </div>
+        <div class="fg"><label class="fl">Coach's session notes <span>(private — used to personalize the closing)</span></label><textarea class="fi" id="f-notes" placeholder="e.g. Client mentioned feeling 'invisible' re: her health. Lights up talking about cooking for family — use food as connection not punishment. Strong intrinsic motivation once she feels supported..." style="min-height:90px"></textarea></div>
+        <div class="ibtns"><button class="btn" onclick="goS(2)"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back</button><button class="btn btn-p" onclick="goS(4)">Review & generate <i class="ti ti-arrow-right" aria-hidden="true"></i></button></div>
+      </div>
+      <div class="isec" id="is-4">
+        <div class="ise">Section 05 · Final step</div><div class="ist">Review & generate report</div><p class="isb">Review the summary, then generate. Claude writes the full personalized FHC assessment report from everything you've entered — download as a PDF in seconds.</p>
+        <div class="rvg" id="rvg"></div>
+        <div class="ald" id="ald">
+          <div class="sp"></div>
+          <div class="alt">Building <span id="ain">the report</span>...</div>
+          <div class="als">Claude is writing a personalized assessment report from your session notes.</div>
+          <ul class="alst" id="alst">
+            <li data-i="0"><span class="sdot"></span>Analyzing client snapshot & goals</li>
+            <li data-i="1"><span class="sdot"></span>Building nutrition strategy & macros</li>
+            <li data-i="2"><span class="sdot"></span>Writing training recommendations</li>
+            <li data-i="3"><span class="sdot"></span>Crafting Week 1 focus plan</li>
+            <li data-i="4"><span class="sdot"></span>Personalizing language & tone</li>
+            <li data-i="5"><span class="sdot"></span>Finalizing for download</li>
+          </ul>
+        </div>
+        <div id="rpt-out" style="display:none">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+            <div><div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:#3B6D11;margin-bottom:2px">✓ Report generated</div><div style="font-size:15px;font-weight:500">Ready to download</div></div>
+            <div style="display:flex;gap:8px"><button class="btn" onclick="resetR()"><i class="ti ti-refresh" aria-hidden="true"></i> New report</button><button class="btn btn-d" id="dlb"><i class="ti ti-download" aria-hidden="true"></i> Download PDF</button></div>
+          </div>
+          <div class="rpt" id="rp"></div>
+        </div>
+        <div id="gc"><div class="ibtns"><button class="btn" onclick="goS(3)"><i class="ti ti-arrow-left" aria-hidden="true"></i> Back</button><button class="btn btn-g" id="gb"><i class="ti ti-sparkles" aria-hidden="true"></i> Generate assessment report</button></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="view" id="v-onboard">
+  <div class="ph"><div><div class="pe">The first 14 days</div><div class="pt">Onboarding timeline</div></div><div class="pm">Assessment → review session,<br/><strong>7 days maximum.</strong></div></div>
+  <div class="il"><div class="ii">i</div><div><strong>SLAs:</strong> Welcome ≤2 hrs of signing · Intake within 24 hrs · Report within <strong>72 hrs of assessment</strong> · Review 1-2 days after report. <strong>Total: ≤7 days.</strong></div></div>
+  <div class="card" style="margin-bottom:12px"><div class="tl"><div class="tlt" id="tlt"></div></div></div>
+  <div class="obd" id="obd"></div>
+</div>
+
+<div class="view" id="v-ongoing">
+  <div class="ph"><div><div class="pe">After the first 14 days</div><div class="pt">Ongoing flow</div></div><div class="pm">Biweekly or monthly sessions.<br/>12-week chapters.</div></div>
+  <div class="og2">
+    <div class="card"><div class="ct" style="margin-bottom:12px">Weekly communication rhythm</div>
+      <div class="dr"><div class="drd">Mon</div><div><div class="drt">Big check-in communication</div><div class="drs">Open the week. Weekend log reflection, this week's focus, one question to live with. Via CoachRx by 10 AM.</div></div></div>
+      <div class="dr"><div class="drd">Wed</div><div><div class="drt">Nuanced communications</div><div class="drs">Short, specific, personal CoachRx replies. Less structure, more humanity. Name something only you would notice.</div></div></div>
+      <div class="dr"><div class="drd">Fri</div><div><div class="drt">Big check-in communication</div><div class="drs">Close the week. Data reflection, weekend strategy, recognition for what was hard. By 3 PM.</div></div></div>
+      <div class="dr"><div class="drd">Any</div><div><div class="drt">Care touch</div><div class="drs">Voice note, article, "thinking of you." The moment they screenshot and share with a friend.</div></div></div>
+    </div>
+    <div class="card"><div class="ct" style="margin-bottom:10px">CoachRx integration</div><p style="font-size:11px;color:var(--color-text-secondary);margin-bottom:12px">CoachRx handles programming, macros, tracking. This portal handles the relationship layer.</p>
+      <ul style="list-style:none"><li style="padding:9px 0;border-bottom:0.5px dashed var(--color-border-tertiary);font-size:12px;color:var(--color-text-secondary)"><strong style="color:var(--color-text-primary)">Weekly automated check-in</strong> — edit per client every week. Never generic. Always tuned to current pillar focus.</li><li style="padding:9px 0;border-bottom:0.5px dashed var(--color-border-tertiary);font-size:12px;color:var(--color-text-secondary)"><strong style="color:var(--color-text-primary)">2-3 touchpoints minimum</strong> — every client, every week. Replies to CoachRx updates. Non-negotiable.</li><li style="padding:9px 0;border-bottom:0.5px dashed var(--color-border-tertiary);font-size:12px;color:var(--color-text-secondary)"><strong style="color:var(--color-text-primary)">Programming & macros</strong> — inside CoachRx, in line with assessment & session updates.</li><li style="padding:9px 0;font-size:12px;color:var(--color-text-secondary)"><strong style="color:var(--color-text-primary)">Cross-coach visibility</strong> — for combined health + fitness clients, both coaches review logs.</li></ul>
+    </div>
+  </div>
+  <div class="tw">
+    <div class="twe">The 12-week chapter</div><div class="twt">Every 12 weeks, a deliberate review.</div>
+    <p style="font-size:12px;color:#27500A;line-height:1.6">Ongoing coaching needs structure or it drifts. 12-week chapters — each ending with a dedicated review that pulls back from the week-to-week and looks at the arc.</p>
+    <div class="twg">
+      <div><div class="twcl">During the 12 weeks</div><div class="twli">· Biweekly or monthly sessions</div><div class="twli">· Mon/Wed/Fri communication rhythm</div><div class="twli">· 2-3 CoachRx touchpoints/week</div><div class="twli">· Programming evolves inside CoachRx</div></div>
+      <div><div class="twcl">At the 12-week review</div><div class="twli">· Visual progress report (data + photos)</div><div class="twli">· What worked, shifted, surprised</div><div class="twli">· Recalibrate goals for next 12 weeks</div><div class="twli">· Updated programming roadmap delivered</div></div>
+    </div>
+    <div style="margin-top:12px"><div style="font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:#3B6D11;opacity:.75;margin-bottom:6px">Example — Kathleen, week 11 of 12</div><div class="ws2"><div class="wsc f"></div><div class="wsc f"></div><div class="wsc f"></div><div class="wsc f"></div><div class="wsc f"></div><div class="wsc f"></div><div class="wsc f"></div><div class="wsc f"></div><div class="wsc f"></div><div class="wsc f"></div><div class="wsc cu"></div><div class="wsc"></div></div><div style="font-size:10px;color:#3B6D11;opacity:.75;margin-top:4px;font-style:italic">Review session prep begins this week. Progress visual due by Monday.</div></div>
+  </div>
+</div>
+
+<div class="view" id="v-resources">
+  <div class="ph"><div><div class="pe">Evergreen materials</div><div class="pt">Resource library</div></div><div class="pm"><span class="pn" id="rcount">0</span>evergreen pieces</div></div>
+  <div class="rtabs" id="rtabs"><button class="rt on" data-cat="all">All</button><button class="rt" data-cat="onboarding">Onboarding</button><button class="rt" data-cat="nutrition">Nutrition</button><button class="rt" data-cat="training">Training & recovery</button><button class="rt" data-cat="milestones">Milestone moments</button><button class="rt" data-cat="coachrx">CoachRx templates</button><button class="rt" data-cat="protocols">Coach protocols</button></div>
+  <div class="rgrid" id="rgrid"></div>
+</div>
+
+<div class="view" id="v-playbook">
+  <div class="ph"><div><div class="pe">Scenario library</div><div class="pt">Coach playbook</div></div><div class="pm">The moments that test us most —<br/>met with structure and humanity.</div></div>
+  <div class="pbg" id="pbg"></div>
+  <div style="margin-top:12px" class="card"><div class="ct">A note on protocols</div><p style="font-size:12px;color:var(--color-text-secondary);line-height:1.6;margin-top:6px">These are scaffolding, not scripts. Use them when you're tired, when you're new, when you've been blindsided. The best coaches have internalized the structure so deeply they no longer need it — but they could write it from memory.</p></div>
+</div>
+
+</main>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+const CLIENTS=[
+  {id:'k',nm:'Kathleen S.',av:'av-g',in:'KS',stg:'Wk 11/12',snc:'Feb 25',nxt:'Wed May 22',cad:'Biweekly',g:'Body recomposition with sustained CrossFit performance. Recompose without losing strength.'},
+  {id:'j',nm:'James Park',av:'av-o',in:'JP',stg:'Wk 8/12',snc:'Mar 18',nxt:'Today 11:30',cad:'Biweekly',g:'Rebuild relationship with cooking. Cook 4 dinners weekly. Stop weekend binge-eating spiral.'},
+  {id:'b',nm:'Bea Sullivan',av:'av-t',in:'BS',stg:'Wk 2/12',snc:'May 1',nxt:'Thu 09:00',cad:'Biweekly',g:'Walk daily without negotiating with herself. Quiet the inner critic around movement.'},
+  {id:'t',nm:'Theo Aldridge',av:'av-g',in:'TA',stg:'Day 0',snc:'May 13',nxt:'Today 15:30',cad:'Biweekly',g:'Initial assessment — stress, sleep, and recent diagnosis to integrate.'},
+  {id:'r',nm:'Renée Boucher',av:'av-t',in:'RB',stg:'Wk 12/12',snc:'Feb 18',nxt:'Fri 13:00',cad:'Biweekly',g:'Past plateau, rebuilding momentum. 12-wk review prep this week.'},
+  {id:'a',nm:'Arun Patel',av:'av-o',in:'AP',stg:'Wk 3/12',snc:'Apr 22',nxt:'Fri 16:00',cad:'Biweekly',g:'Energy management around demanding work. Boundaries around evening hours.'},
+  {id:'l',nm:'Lena Voss',av:'av-o',in:'LV',stg:'Wk 6/12',snc:'Mar 29',nxt:'Fri 17:30',cad:'Monthly',g:'Post-postpartum return to feeling like herself. Identity reconstruction.'}
+];
+const TASKS=[
+  {k:'tp',l:'CoachRx<br>Touchpoints',t:'dots',max:3},
+  {k:'mon',l:'Mon<br>Pulse',t:'chk'},{k:'fri',l:'Fri<br>Pulse',t:'chk'},
+  {k:'rxe',l:'CoachRx<br>Edit',t:'chk'},{k:'ses',l:'Session<br>+Notes',t:'chk'},
+  {k:'nxt',l:'Next<br>Booked',t:'chk'},{k:'care',l:'Care<br>Touch',t:'chk'}
+];
+const RESOURCES=[
+  {cat:'onboarding',type:'email',nm:'Welcome email template',desc:'First email within 2 hrs of signing. Sets the tone for everything.'},
+  {cat:'onboarding',type:'pdf',nm:'FHC welcome package',desc:'12-page PDF — what to expect, how we work together, the FHC philosophy.'},
+  {cat:'onboarding',type:'pdf',nm:'Pre-session intake form',desc:'Sent before assessment. Captures lifestyle, history, current state, food journal.'},
+  {cat:'onboarding',type:'template',nm:'Assessment report template',desc:'Branded FHC template — or use Intake Assessment tab to auto-generate instantly.'},
+  {cat:'onboarding',type:'template',nm:'Review session run sheet',desc:'Step-by-step guide for walking client through the assessment report.'},
+  {cat:'nutrition',type:'pdf',nm:'3-day sample meal plan',desc:'Two training days + one recovery day. Personalize per client food preferences.'},
+  {cat:'nutrition',type:'pdf',nm:'Protein timing cheat sheet',desc:'Pre/post/3pm/evening — pocket-sized reference for clients.'},
+  {cat:'nutrition',type:'pdf',nm:'Sugar craving alternatives',desc:'SmartSweets, Mid-Day Squares, RXBAR. With guidance on when to use which.'},
+  {cat:'nutrition',type:'tool',nm:'Grocery reset checklist',desc:'One-page kitchen reset. No extreme rules. For clients starting fresh.'},
+  {cat:'nutrition',type:'pdf',nm:'Recipe pack — 14 easy dinners',desc:'High-protein, training-aware, real-food recipes. Forgiving for tired weeknights.'},
+  {cat:'training',type:'pdf',nm:'Zone 2 walking protocol',desc:'Why walking is criminally underrated. 4-week build + weighted vest progression.'},
+  {cat:'training',type:'pdf',nm:'CrossFit recovery stack',desc:'Sleep, hydration, mobility protocols for clients training 3-4x weekly.'},
+  {cat:'training',type:'tool',nm:'Hydration & supplements guide',desc:'40oz lemon water + sea salt + standard supplement stack. Client handout.'},
+  {cat:'training',type:'pdf',nm:'Body-weight sequence (travel)',desc:'No equipment, 12 minutes. For travel weeks or low-time periods.'},
+  {cat:'milestones',type:'template',nm:'12-week progress report',desc:'Visual report at every 12-wk review. Data + photos + reflections + recalibration.'},
+  {cat:'milestones',type:'email',nm:'30-day "Distance Travelled" note',desc:'Personal letter at day 30. First major emotional touchpoint.'},
+  {cat:'milestones',type:'email',nm:'12-week review recap',desc:'Post-session summary that closes one chapter and opens the next.'},
+  {cat:'milestones',type:'pdf',nm:'90-day reflection booklet',desc:'Guided journal. Client fills out and brings to the review session.'},
+  {cat:'milestones',type:'email',nm:'One-year anniversary letter',desc:'The most important letter you\'ll write all year. Don\'t skip this.'},
+  {cat:'coachrx',type:'template',nm:'Monday big pulse template',desc:'The Monday opener. Customize with this week\'s focus and a forward-looking question.'},
+  {cat:'coachrx',type:'template',nm:'Wednesday nuanced touch pack',desc:'8 short reply frameworks for mid-week CoachRx replies. Specific, warm, brief.'},
+  {cat:'coachrx',type:'template',nm:'Friday big pulse template',desc:'The Friday closer. Reflection + weekend strategy + recognition.'},
+  {cat:'coachrx',type:'template',nm:'Automated check-in customizer',desc:'Library of prompt variants for the weekly automated check-in. Edit per client.'},
+  {cat:'coachrx',type:'template',nm:'Voice note prompts',desc:'Short scripts for the surprise voice notes clients screenshot and share.'},
+  {cat:'protocols',type:'protocol',nm:'Plateau protocol',desc:'The 6-step process when results stall. Sequence matters.'},
+  {cat:'protocols',type:'protocol',nm:'Quiet client protocol',desc:'When CoachRx logs go silent. How to re-engage without guilt.'},
+  {cat:'protocols',type:'protocol',nm:'Hard disclosure protocol',desc:'When a client shares something heavy. Scope, response, follow-up.'},
+  {cat:'protocols',type:'protocol',nm:'Cadence change protocol',desc:'Biweekly → monthly transition. When to make it, how to frame it.'},
+  {cat:'protocols',type:'protocol',nm:'Pause / departure protocol',desc:'When a client wants to pause or leave. Mark it well.'}
+];
+const TL=[
+  {day:'Day 0',lbl:'Welcome email',sla:'≤ 2 hrs of signing',s:1,done:true},
+  {day:'Day 1',lbl:'Pre-session intake',sla:'24 hrs after welcome',s:2,done:true},
+  {day:'Day 2–5',lbl:'Initial assessment',sla:'75 min session',s:3},
+  {day:'Day 3–7',lbl:'Report delivered',sla:'≤ 72 hrs after session',s:4},
+  {day:'Day 5–7',lbl:'Review session',sla:'1-2 days after report',s:5},
+  {day:'Day 7–14',lbl:'CoachRx setup',sla:'Programming live',s:6},
+  {day:'Day 14+',lbl:'Ongoing rhythm',sla:'Mon/Wed/Fri begins',s:7}
+];
+const OB={
+  1:{e:'Step 01 · Day 0',t:'Welcome email',s:'Sent within 2 hours of contract signing.',tm:`Subject: Welcome, {{FIRST_NAME}} — so glad you said yes.
+
+{{FIRST_NAME}},
+
+The fact that you signed up tells me something true: you're done waiting, and you're ready to begin. I'm honored to be the one walking with you.
+
+→ I've attached your Welcome Package.
+→ Within 24 hours, you'll receive a short intake form. First instincts win.
+→ Our first session is {{SESSION_DATE}}. Block 75 minutes.
+→ Your personalized report arrives within 72 hours of our assessment, then we review it together.
+
+No homework before then. Just rest in the decision you've made.
+
+With strength,
+{{COACH_NAME}} · Function Health Club`,ck:['Personalize with client first name throughout','Confirm session date in calendar','Attach FHC Welcome Package PDF','Send within 2 hours of signing — no exceptions']},
+  2:{e:'Step 02 · Day 1',t:'Pre-session intake',s:'Captures the lay of the land. Read twice before the session.',tm:`PRE-SESSION INTAKE
+
+1. Height / Weight / Age / Activity level
+2. Diagnoses, medications, other practitioners?
+3. Why now? What made this the right moment?
+4. What have you tried before? What worked / didn't?
+5. Walk me through a typical eating day.
+6. Current training — frequency, type, intensity.
+7. Sleep — hours, quality, consistency.
+8. Top 3 current stressors.
+9. If we did great work — what's different in 6 months?
+10. Anything weird, hard to articulate, I should know?
+
+Don't polish. First instincts win.`,ck:['Send 24 hrs after welcome — let the welcome land','Use fillable form, not a Word doc','Estimate 15 min to complete','Read twice pre-session: content + what\'s between the lines']},
+  3:{e:'Step 03 · Day 2–5',t:'Initial assessment',s:'75 minutes. Most important session of the engagement. Use Intake Assessment tab after to auto-generate the report.',tm:`INITIAL ASSESSMENT — Run Sheet
+
+PRE-SESSION (15 min before)
+□ Re-read intake form & food journal
+□ Note flags, openings, surprises
+□ Settle — presence over performance
+
+ARRIVAL (5 min)
+□ Warm welcome. Don't rush.
+□ "Today is mostly me listening."
+
+ASSESSMENT (50 min)
+□ Snapshot: height, weight, TDEE, activity
+□ Goal in their words
+□ Strengths already in place
+□ Nutrition rhythm & history
+□ Training output & history
+□ Recovery — sleep, hydration, supplements
+□ Cravings & evening patterns
+□ Stress, schedule, support system
+
+CLOSE (5 min)
+□ Preview the report they'll receive
+□ Set Week 1 three-metric focus
+□ Confirm review session in calendar NOW
+□ "Report within 72 hours."
+
+→ Open Intake Assessment tab after to generate the report.`,ck:['Block 90 min total (15 prep + 75 session)','No notes during — capture immediately after','Confirm review session booked before this one ends','Open Intake Assessment tab after to generate the report']},
+  4:{e:'Step 04 · ≤ 72 hrs after session',t:'Assessment report',s:'Generated from the Intake Assessment tab. Most-read artifact in the program.',tm:`REPORT DELIVERY EMAIL
+
+Subject: Your personalized coaching report
+
+{{FIRST_NAME}},
+
+Attached is your full coaching report. Take time to read it — let it land, notice what resonates and what surprises you.
+
+→ Everything here was built around you. This isn't a template.
+→ Bring questions and reactions to our review on {{REVIEW_DATE}}.
+→ Don't start implementing yet. Week 1 focus is enough.
+
+I'll see you {{REVIEW_DATE}}.
+
+{{COACH_NAME}}`,ck:['Use Intake Assessment tab → Generate → Download PDF','Read report aloud — would they feel SEEN?','Send 24-48 hrs before review session','Personalize the delivery email']},
+  5:{e:'Step 05 · 1-2 days after report',t:'Review session',s:'Where the client feels truly seen. The session that creates clients for life.',tm:`REVIEW SESSION — Run Sheet (60 min)
+
+OPENING (5 min)
+□ "How did the report land?"
+□ Don't move on until you've heard the real answer
+
+WALK THROUGH (30 min)
+□ Page by page. Slow.
+□ "Does this match how you see yourself?"
+□ Amend where they correct you
+
+SETUP (15 min)
+□ CoachRx walkthrough
+□ Confirm Mon/Wed/Fri rhythm
+□ Schedule next 4 sessions now
+□ 2-3 touchpoints/week expectation set
+
+CLOSE (10 min)
+□ Week 1 three-metric focus confirmed
+□ One question to live with`,ck:['Have printed copy of report on your desk','Stay present if they cry — don\'t apologize for depth','This session creates renewers — don\'t treat as routine','CoachRx must be live by end of this day']},
+  6:{e:'Step 06 · Day 7–14',t:'CoachRx setup',s:'Programming, tracking, and automated check-ins go live.',tm:`COACHRX SETUP
+
+□ Macro targets entered (from report)
+□ Sample meal plan uploaded or linked
+□ Training program coordinated (if combined client)
+□ Habit tracking enabled — Week 1 three-metric focus
+□ Weekly check-in customized to client's current focus
+□ NEVER let a generic check-in go out
+□ First Monday Big Pulse drafted & scheduled
+□ Next 4 sessions booked in calendar
+□ 12-week review pre-scheduled`,ck:['CoachRx live before client leaves review session','First automated check-in fires Sunday evening','Cross-coach sync within 48 hrs for combined clients','All sessions + 12-wk review booked in calendar']},
+  7:{e:'Step 07 · Day 14+',t:'Ongoing rhythm begins',s:'Biweekly sessions, weekly communication rhythm, 12-week chapters.',tm:`ONGOING RHYTHM (recurring weekly)
+
+Monday — Big check-in via CoachRx (by 10 AM)
+Wednesday — Nuanced touchpoints (specific, personal)
+Friday — Big check-in + weekend strategy (by 3 PM)
+Anytime — Care touch (voice note, article, recognition)
+
+WEEKLY TRACKER
+□ 2-3 CoachRx touchpoints logged
+□ Monday + Friday big pulse sent
+□ Weekly automated check-in customized
+□ Session held + notes logged within 24 hrs
+□ Next session booked before this one ends
+□ One care touch beyond protocol`,ck:['Add client to recurring weekly tracker','Set 12-wk review calendar reminder at Week 11','Adjust CoachRx check-in weekly — never generic','Watch for cadence-change signals (biweekly → monthly)']}
+};
+const PB=[
+  {at:'#EAF3DE',ac:'#27500A',tag:'Scenario · 01',t:'When a client hits a <em>plateau</em>',steps:['Don\'t rush to fix. Plateaus are often biological — and emotional.','Pull the last 4 weeks of CoachRx data. Look for compliance, not just outcomes.','Reflect back what they\'ve already changed. Most clients underestimate.','Examine sleep & stress before nutrition or training.','Propose a 14-day experiment, not a forever plan.','Send the "Stuck Doesn\'t Mean Stopped" message from the library.']},
+  {at:'#FAECE7',ac:'#712B13',tag:'Scenario · 02',t:'When CoachRx logs <em>go quiet</em>',steps:['One miss = curiosity. Two = check-in. Three = direct conversation.','Never lead with "you haven\'t logged." Lead with concern.','Use the gentle-pulse template — never make them feel guilty.','Ask what\'s getting in the way of logging. Listen.','Offer lower-friction option before they fully disengage.','If they need to pause, hold the door open.']},
+  {at:'#FAEEDA',ac:'#633806',tag:'Scenario · 03',t:'The 12-week <em>review session</em>',steps:['Build the visual progress report 5 days before.','Send the report ahead — never reveal it cold.','Open with what surprised you. Then ask what surprised them.','"What got harder? What got easier?" — sit in both answers.','Recalibrate the next 12 weeks together. Not a renewal sell.','Send a "Distance Travelled" note within 48 hours.']},
+  {at:'#EEEDFE',ac:'#3C3489',tag:'Scenario · 04',t:'When a client shares something <em>hard</em>',steps:['Stop coaching. Start listening. Sit in the silence.','Thank you for trusting me with that — before anything else.','Resist the urge to immediately reframe or solve.','"What would feel most supportive right now?"','Know your scope. If clinical: refer, warmly, with a name.','Follow up within 24 hours, no agenda.']},
+  {at:'#EAF3DE',ac:'#27500A',tag:'Scenario · 05',t:'Dropping cadence — <em>biweekly to monthly</em>',steps:['Wait for the client to ask. Don\'t propose it yourself.','Validate readiness: integration of practices, self-sufficiency, stability.','Frame as a graduation, not a downgrade.','Increase Mon/Wed/Fri communications to fill the gap.','Keep CoachRx touchpoints at 2-3 minimum. Cadence drop doesn\'t change that.','Revisit at the next 12-week review.']},
+  {at:'#FAECE7',ac:'#712B13',tag:'Scenario · 06',t:'When a client wants to <em>pause or leave</em>',steps:['Never take it personally. Sometimes the work is complete.','Ask the honest exit question: "What was missing for you?"','Thank them for the trust — specifically, with details.','Offer a closing session. Make completion ceremonial.','Send a "What you taught me" note within 7 days.','Keep the door open without making it weird.']}
+];
+
+const S={wk:0,wd:{},obs:3,rc:'all',is:0,supps:new Set(),alts:new Set(['SmartSweets','Mid-Day Squares','RXBAR'])};
+
+function gv(id){const e=document.getElementById(id);return e?e.value.trim():''}
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('on');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('on'),2600)}
+
+document.querySelectorAll('.nb').forEach(b=>b.addEventListener('click',()=>{
+  const v=b.dataset.v;
+  document.querySelectorAll('.nb').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
+  document.getElementById('v-'+v).classList.add('on');
+  document.querySelector('.mn').scrollTop=0;
+}));
+
+function wkK(o){const d=new Date();d.setDate(d.getDate()+o*7);const s=new Date(d);s.setDate(d.getDate()-d.getDay());return s.toISOString().slice(0,10)}
+function wkL(o){const d=new Date();d.setDate(d.getDate()+o*7);const s=new Date(d);s.setDate(d.getDate()-d.getDay());return`Week of ${['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][s.getMonth()]} ${s.getDate()}`}
+function wkN(o){const d=new Date();d.setDate(d.getDate()+o*7);const s=new Date(d.getFullYear(),0,1);return Math.ceil((Math.floor((d-s)/864e5)+s.getDay()+1)/7)}
+
+function renderTracker(){
+  const wk=wkK(S.wk);if(!S.wd[wk])S.wd[wk]={};
+  document.getElementById('wt').textContent=wkL(S.wk);
+  document.getElementById('wsub').textContent=`Week ${wkN(S.wk)} · 2026`;
+  const tbl=document.getElementById('tbl');
+  let h=`<div class="tr trh"><div class="tc" style="text-align:left;padding-left:10px">Client</div>${TASKS.map(t=>`<div class="tc">${t.l}</div>`).join('')}<div class="tc">Done</div></div>`;
+  CLIENTS.forEach(c=>{
+    if(!S.wd[wk][c.id])S.wd[wk][c.id]={};
+    const d=S.wd[wk][c.id];let dn=0;
+    TASKS.forEach(t=>{if(t.t==='dots'){if((d[t.k]||0)>=t.max)dn++}else{if(d[t.k])dn++}});
+    const pct=Math.round(dn/TASKS.length*100);
+    h+=`<div class="tr"><div class="tc tcc"><div class="cn">${c.nm}</div><div class="cst">${c.stg}</div><div class="cca">${c.cad}</div></div>
+    ${TASKS.map(t=>{
+      if(t.t==='dots'){const ct=d[t.k]||0;return`<div class="tc"><div class="dots" data-c="${c.id}" data-k="${t.k}" data-m="${t.max}">${[0,1,2].map(i=>`<div class="dot${i<ct?' on':''}"></div>`).join('')}</div><div class="dc">${ct}/${t.max}</div></div>`}
+      return`<div class="tc"><div class="chk${d[t.k]?' on':''}" data-c="${c.id}" data-k="${t.k}"><i class="ti ti-check" aria-hidden="true"></i></div></div>`;
+    }).join('')}
+    <div class="tc"><div class="pb"><div class="pf" style="width:${pct}%"></div></div><div class="pp">${pct}%</div></div></div>`;
+  });
+  tbl.innerHTML=h;
+  tbl.querySelectorAll('.chk').forEach(el=>el.addEventListener('click',()=>{const d=S.wd[wk][el.dataset.c];d[el.dataset.k]=!d[el.dataset.k];renderTracker()}));
+  tbl.querySelectorAll('.dots').forEach(el=>el.addEventListener('click',()=>{const d=S.wd[wk][el.dataset.c];const k=el.dataset.k;const m=+el.dataset.m;d[k]=((d[k]||0)+1)>m?0:(d[k]||0)+1;renderTracker()}));
+}
+document.getElementById('wp').addEventListener('click',()=>{S.wk--;renderTracker()});
+document.getElementById('wn').addEventListener('click',()=>{S.wk++;renderTracker()});
+document.getElementById('wr').addEventListener('click',()=>{S.wd[wkK(S.wk)]={};renderTracker();toast('Week reset')});
+
+function renderClients(){
+  document.getElementById('cg').innerHTML=CLIENTS.map(c=>`
+    <div class="ccard"><div class="ch"><div class="cav ${c.av}">${c.in}</div><div><div class="cn2">${c.nm}</div><div class="csn">Since ${c.snc} · ${c.stg}</div><span class="cbg${c.cad==='Monthly'?' m':''}">${c.cad}</span></div></div>
+    <div class="cg">"${c.g}"</div>
+    <div class="cf"><div><div style="font-size:9px;color:var(--color-text-secondary)">Next session</div><strong style="font-size:11px">${c.nxt}</strong></div><button class="btn" style="padding:4px 8px;font-size:10px" onclick="toast('Opening ${c.nm}...')">Open</button></div>
+    </div>`).join('');
+}
+
+function renderTimeline(){
+  document.getElementById('tlt').innerHTML=TL.map(t=>`
+    <div class="tln${t.done?' done':''}${t.s===S.obs?' act':''}" data-s="${t.s}">
+      <div class="tld">${t.s}</div><div class="tldy">${t.day}</div><div class="tll">${t.lbl}</div><div class="tls">${t.sla}</div>
+    </div>`).join('');
+  document.querySelectorAll('.tln').forEach(n=>n.addEventListener('click',()=>{S.obs=+n.dataset.s;renderTimeline();renderOb()}));
+}
+function renderOb(){
+  const c=OB[S.obs];
+  document.getElementById('obd').innerHTML=`
+    <div class="ise">${c.e}</div><div style="font-size:16px;font-weight:500;margin-bottom:3px">${c.t}</div>
+    <div style="font-size:12px;color:var(--color-text-secondary);margin-bottom:12px;padding-bottom:10px;border-bottom:0.5px solid var(--color-border-tertiary)">${c.s}</div>
+    <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-secondary);margin-bottom:6px">Template / run sheet</div>
+    <div class="tbox"><button class="cpb" id="cpb">Copy</button>${c.tm}</div>
+    <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--color-text-secondary);margin-bottom:6px">Coach's checklist</div>
+    <ul class="chl">${c.ck.map(i=>`<li class="chi">${i}</li>`).join('')}</ul>`;
+  document.getElementById('cpb').addEventListener('click',()=>{navigator.clipboard.writeText(c.tm).then(()=>{const b=document.getElementById('cpb');b.textContent='Copied ✓';b.classList.add('cp');setTimeout(()=>{b.textContent='Copy';b.classList.remove('cp')},2000);toast('Copied')})});
+}
+
+function renderResources(){
+  const f=S.rc==='all'?RESOURCES:RESOURCES.filter(r=>r.cat===S.rc);
+  document.getElementById('rcount').textContent=RESOURCES.length;
+  document.getElementById('rgrid').innerHTML=f.map(r=>`
+    <div class="rc2 ${r.type}"><span class="rtype">${r.type}</span><div class="rnm">${r.nm}</div><div class="rdesc">${r.desc}</div>
+    <div class="ract"><button class="rb" onclick="toast('Preview: ${r.nm}')">Preview</button><button class="rb p" onclick="toast('Send: ${r.nm}')">Send to client</button></div></div>`).join('');
+}
+document.querySelectorAll('.rt').forEach(t=>t.addEventListener('click',()=>{
+  S.rc=t.dataset.cat;document.querySelectorAll('.rt').forEach(x=>x.classList.remove('on'));t.classList.add('on');renderResources();
+}));
+
+function renderPlaybook(){
+  document.getElementById('pbg').innerHTML=PB.map(p=>`
+    <div class="pbc"><div class="pbtg" style="background:${p.at};color:${p.ac}">${p.tag}</div><div class="pbt">${p.t}</div>
+    <ol class="pbst">${p.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>`).join('');
+}
+
+document.querySelectorAll('.is').forEach(b=>b.addEventListener('click',()=>goS(+b.dataset.s)));
+function goS(idx){
+  document.getElementById('is-'+S.is).classList.remove('on');
+  document.querySelectorAll('.is')[S.is].classList.remove('on');
+  if(idx>S.is)document.querySelectorAll('.is')[S.is].classList.add('done');
+  S.is=idx;
+  document.getElementById('is-'+idx).classList.add('on');
+  document.querySelectorAll('.is').forEach((b,i)=>b.classList.toggle('on',i===idx));
+  document.getElementById('ipf').style.width=((idx+1)/5*100)+'%';
+  document.getElementById('ipt').textContent=`Step ${idx+1} of 5`;
+  if(idx===4)buildReview();
+  document.querySelector('.ipan').scrollTop=0;
+}
+document.querySelectorAll('#sup-tags .to').forEach(t=>t.addEventListener('click',()=>{t.classList.toggle('sel');if(t.classList.contains('sel'))S.supps.add(t.dataset.v);else S.supps.delete(t.dataset.v)}));
+document.querySelectorAll('#alt-tags .to').forEach(t=>t.addEventListener('click',()=>{t.classList.toggle('sel');if(t.classList.contains('sel'))S.alts.add(t.dataset.v);else S.alts.delete(t.dataset.v)}));
+document.querySelectorAll('#alt-tags .to.sel').forEach(t=>S.alts.add(t.dataset.v));
+
+function cd(){
+  const sp=[...S.supps];const sx=gv('f-supx');if(sx)sp.push(sx);
+  return{fn:gv('f-fn'),ln:gv('f-ln'),dt:gv('f-dt'),age:gv('f-age'),sex:gv('f-sex'),ht:gv('f-ht'),wt:gv('f-wt'),tdee:gv('f-tdee'),gwt:gv('f-gwt'),act:gv('f-act'),td:gv('f-td'),med:gv('f-med'),goal:gv('f-goal'),succ:gv('f-succ'),str:gv('f-str'),cal:gv('f-cal'),caln:gv('f-caln'),pro:gv('f-pro'),carb:gv('f-carb'),fat:gv('f-fat'),macr:gv('f-macr'),meal:gv('f-meal'),tool:gv('f-tool'),tt:gv('f-tt'),tf:gv('f-tf'),trec:gv('f-trec'),z2:gv('f-z2'),pre:gv('f-pre'),post:gv('f-post'),aft:gv('f-aft'),eve:gv('f-eve'),hyd:gv('f-hyd'),supps:sp,slq:gv('f-slq'),slh:gv('f-slh'),stress:gv('f-stress'),crav:gv('f-crav'),alts:[...S.alts],cravn:gv('f-cravn'),m1:gv('f-m1'),m1d:gv('f-m1d'),m2:gv('f-m2'),m2d:gv('f-m2d'),m3:gv('f-m3'),m3d:gv('f-m3d'),notes:gv('f-notes')};
+}
+function buildReview(){
+  const d=cd();const nm=(d.fn+' '+d.ln).trim()||'Client';
+  document.getElementById('rvg').innerHTML=`
+    <div class="rvc"><div class="rvl">Client</div><div class="rvv">${nm}</div><div class="rvs">${d.age?d.age+' yrs · ':''} ${d.sex||''} ${d.ht?' · '+d.ht:''} · ${d.wt||'—'}</div></div>
+    <div class="rvc"><div class="rvl">Primary goal</div><div class="rvs">${d.goal||'Not entered'}</div></div>
+    <div class="rvc"><div class="rvl">Nutrition targets</div><div class="rvv">${d.cal||'—'}</div><div class="rvs">P: ${d.pro||'—'} · C: ${d.carb||'—'} · F: ${d.fat||'—'}</div></div>
+    <div class="rvc"><div class="rvl">Training</div><div class="rvv">${d.tt||'—'}</div><div class="rvs">${d.tf||'—'}</div></div>
+    <div class="rvc"><div class="rvl">Week 1 focus</div><div class="rvs">${[d.m1,d.m2,d.m3].filter(Boolean).join(' · ')||'Default metrics'}</div></div>
+    <div class="rvc"><div class="rvl">Supplements</div><div class="rvs">${d.supps.length?d.supps.join(', '):'None selected'}</div></div>`;
+}
+
+document.getElementById('gb').addEventListener('click',genReport);
+async function genReport(){
+  const d=cd();
+  if(!d.fn){toast('Enter client first name first');return}
+  document.getElementById('gc').style.display='none';
+  const ld=document.getElementById('ald');ld.classList.add('on');
+  document.getElementById('ain').textContent=d.fn+"'s report";
+  const steps=document.querySelectorAll('.alst li');let si=0;
+  const st=setInterval(()=>{if(si>0)steps[si-1].classList.remove('act');if(si<steps.length){steps[si].classList.add('act');si++}},900);
+  try{
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:3000,
+        system:`You are an expert health coach at Function Health Club writing a personalized initial assessment report. Write in a warm, direct, confident coaching voice. Avoid generic language. Reference the client's specific data and words. Return ONLY valid JSON, no preamble or markdown fences:
+{"welcome":"2-3 sentence warm specific welcome using client name","primaryObjective":"1-2 sentences their goal in their language","strengthsInPlace":"1-2 sentences on what's already working — positive framing","nutritionSummary":"2-3 sentences overall nutrition strategy and why","mealArchitecture":"2-3 sentences on meal structure throughout the day","practicalTool":"1 specific actionable tool recommendation","trainingRec":"2-3 sentences primary training recommendation","zone2Rec":"1-2 sentences recovery movement recommendation","supplementNote":"1-2 sentences hydration and supplement stack","cravingGuideline":"2 sentences approved alternatives and evening guideline","week1Message":"2-3 sentences framing Week 1 focus — keep it light, signal not score","coachClosing":"2-3 sentences of personal observation from the session — warm, specific, insightful. Use the coach notes to make this genuinely personal. This is the heart of the report."}`,
+        messages:[{role:'user',content:`Generate a personalized FHC assessment report.
+
+CLIENT: ${d.fn} ${d.ln}, ${d.age} yrs, ${d.sex}, ${d.ht}, ${d.wt}, TDEE ${d.tdee||'not specified'} cal, ${d.act}
+Training: ${d.td}
+Medical: ${d.med||'None noted'}
+
+GOAL: ${d.goal}
+Success looks like: ${d.succ}
+Strengths in place: ${d.str}
+
+NUTRITION: ${d.cal} daily. Strategy: ${d.caln}
+Macros: Protein ${d.pro} / Carbs ${d.carb} / Fats ${d.fat}
+Rationale: ${d.macr}
+Meal architecture: ${d.meal}
+Practical tool: ${d.tool}
+
+PROTEIN TIMING:
+Pre-workout: ${d.pre}
+Post-workout: ${d.post}
+3pm bridge: ${d.aft}
+Evening: ${d.eve}
+
+TRAINING: ${d.tt} ${d.tf}
+Recommendation: ${d.trec}
+Zone 2 / recovery: ${d.z2}
+Hydration: ${d.hyd}
+Supplements: ${d.supps.join(', ')||'None noted'}
+
+LIFESTYLE:
+Sleep: ${d.slq}, ${d.slh} hrs
+Stressors: ${d.stress}
+Cravings: ${d.crav}
+Approved alternatives: ${d.alts.join(', ')}
+Craving note: ${d.cravn}
+
+WEEK 1 FOCUS:
+${d.m1} — ${d.m1d}
+${d.m2} — ${d.m2d}
+${d.m3} — ${d.m3d}
+
+COACH NOTES (private — use to personalize the closing paragraph):
+${d.notes}
+
+Return only the JSON object.`}]
+      })
+    });
+    clearInterval(st);steps.forEach(s=>{s.classList.remove('act');s.classList.add('done')});
+    const res=await resp.json();
+    const txt=res.content.map(c=>c.text||'').join('');
+    const r=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    const report={...d,...r};
+    setTimeout(()=>{ld.classList.remove('on');showReport(report)},500);
+  }catch(e){clearInterval(st);ld.classList.remove('on');document.getElementById('gc').style.display='block';toast('Error generating — please try again');console.error(e)}
+}
+
+function showReport(r){
+  const nm=(r.fn+' '+r.ln).trim();
+  const dt=r.dt?new Date(r.dt+'T12:00:00').toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'}):new Date().toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('rp').innerHTML=`
+    <div class="rph">
+      <div class="rpe">Health Coaching Report · Initial Assessment</div>
+      <div class="rpn">Welcome, ${r.fn}.</div>
+      <div class="rpd">Prepared by your Function Health Club Coach · ${dt}</div>
+      <div class="rpst">
+        <div class="rpsc"><div class="rpsl">Height</div><div class="rpsv">${r.ht||'—'}</div></div>
+        <div class="rpsc"><div class="rpsl">Weight</div><div class="rpsv">${r.wt||'—'}</div></div>
+        <div class="rpsc"><div class="rpsl">Est. TDEE</div><div class="rpsv">${r.tdee?r.tdee+' cal':'—'}</div></div>
+        <div class="rpsc"><div class="rpsl">Activity</div><div class="rpsv" style="font-size:11px">${r.act?r.act.split('(')[0].trim():'—'}</div></div>
+      </div>
+    </div>
+    <div class="rpb">
+      <div class="rps"><div class="rpsl2">Welcome</div><p class="rptx">${r.welcome||''}</p></div>
+      <div class="rps">
+        <div class="rpsl2">Your goal</div>
+        <div class="rptt">${r.primaryObjective||r.goal||''}</div>
+        <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px;font-size:12px;color:var(--color-text-secondary);font-style:italic;line-height:1.6;margin-top:8px">${r.strengthsInPlace||r.str||''}</div>
+      </div>
+      <div class="rps">
+        <div class="rpsl2">Energy input · Nutrition strategy</div>
+        <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;margin-bottom:10px">
+          <div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px">Daily target</div>
+          <div style="font-size:18px;font-weight:500;margin-bottom:4px">${r.cal||'—'}</div>
+          <div class="rptx">${r.nutritionSummary||r.caln||''}</div>
+        </div>
+        <div class="mac">
+          <div class="mc" style="--mc:#993C1D"><div class="mcl" style="color:#993C1D">Protein</div><div class="mcv">${r.pro||'—'}</div><div class="mcn">Primary driver of muscle preservation in a deficit.</div></div>
+          <div class="mc" style="--mc:#BA7517"><div class="mcl" style="color:#BA7517">Carbohydrates</div><div class="mcv">${r.carb||'—'}</div><div class="mcn">Primary fuel for training intensity and recovery.</div></div>
+          <div class="mc" style="--mc:#3B6D11"><div class="mcl" style="color:#3B6D11">Healthy fats</div><div class="mcv">${r.fat||'—'}</div><div class="mcn">Essential for hormone production and appetite regulation.</div></div>
+        </div>
+        <p class="rptx" style="margin-top:8px"><strong>Meal architecture:</strong> ${r.mealArchitecture||r.meal||''}</p>
+        ${r.practicalTool?`<div style="margin-top:8px;padding:8px 12px;background:#FAEEDA;border-left:3px solid #BA7517;border-radius:0 var(--border-radius-md) var(--border-radius-md) 0;font-size:11px;color:var(--color-text-primary)"><strong style="display:block;font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#BA7517;margin-bottom:2px">Practical tool</strong>${r.practicalTool}</div>`:''}
+      </div>
+      <div class="rps">
+        <div class="rpsl2">Protein timing</div>
+        ${[['Pre-workout',r.pre],['Post-workout',r.post],['~3:30 PM bridge',r.aft],['Evening strategy',r.eve]].filter(([,v])=>v).map(([l,v])=>`<div style="padding:8px 0;border-bottom:0.5px dashed var(--color-border-tertiary)"><span style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.08em;color:#993C1D;display:block;margin-bottom:1px">${l}</span><span class="rptx">${v}</span></div>`).join('')}
+      </div>
+      <div class="rps">
+        <div class="rpsl2">Energy output · Training & movement</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;border-top:2px solid #993C1D"><div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">Primary training</div><div class="rptx">${r.trainingRec||r.trec||r.tt||''}</div></div>
+          <div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px;border-top:2px solid #3B6D11"><div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px">Zone 2 recovery</div><div class="rptx">${r.zone2Rec||r.z2||''}</div></div>
+        </div>
+        ${r.supplementNote?`<div style="margin-top:8px;background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px"><div style="font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px">Hydration & supplements</div><div class="rptx">${r.supplementNote}</div>${r.supps&&r.supps.length?`<div style="font-size:10px;color:var(--color-text-secondary);margin-top:3px">${r.supps.join(' · ')}</div>`:''}</div>`:''}
+      </div>
+      ${r.alts&&r.alts.length?`<div class="rps"><div class="rpsl2">Managing cravings</div><p class="rptx">${r.cravingGuideline||r.cravn||''}</p><div style="display:flex;flex-wrap:wrap;gap:5px;margin-top:8px">${r.alts.map(a=>`<span style="padding:3px 10px;background:var(--color-background-secondary);border-radius:20px;font-size:11px;font-weight:500">${a}</span>`).join('')}</div></div>`:''}
+      <div class="rps">
+        <div class="rpsl2">Week 1 focus · Your 3 daily check-ins</div>
+        <p class="rptx" style="margin-bottom:10px">${r.week1Message||''}</p>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px">
+          ${[[r.m1||'Daily Protein',r.m1d||''],[r.m2||'3pm Energy Score',r.m2d||''],[r.m3||'Recovery Quality',r.m3d||'']].map(([l,ds],i)=>`<div style="background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:12px"><div style="font-size:20px;font-style:italic;color:#993C1D;margin-bottom:5px;font-family:var(--font-serif)">${String(i+1).padStart(2,'0')}</div><div style="font-weight:500;font-size:12px;margin-bottom:3px">${l}</div><div style="font-size:10px;color:var(--color-text-secondary);line-height:1.5">${ds}</div></div>`).join('')}
+        </div>
+      </div>
+      <div class="clb"><div class="clbe">A note from your coach</div><div class="clbt">${r.coachClosing||''}</div><div style="font-size:10px;color:#3B6D11;opacity:.7;margin-top:10px">Function Health Club · Vancouver & Port Coquitlam</div></div>
+    </div>`;
+  document.getElementById('rpt-out').style.display='block';
+  document.getElementById('dlb').onclick=()=>downloadPDF(r,nm,dt);
+}
+
+function resetR(){document.getElementById('rpt-out').style.display='none';document.getElementById('gc').style.display='block';document.querySelectorAll('.alst li').forEach(l=>{l.classList.remove('done','act')})}
+
+async function downloadPDF(r,nm,dt){
+  const btn=document.getElementById('dlb');btn.disabled=true;btn.innerHTML='<i class="ti ti-loader" aria-hidden="true"></i> Generating...';
+  try{
+    const {jsPDF}=window.jspdf;const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const W=210,M=18,CW=W-M*2;let y=0;
+    doc.setFillColor(59,109,17);doc.rect(0,0,W,65,'F');
+    doc.setTextColor(234,243,222);doc.setFontSize(7);doc.setFont('helvetica','normal');doc.text('HEALTH COACHING REPORT  ·  INITIAL ASSESSMENT',M,11);
+    doc.setTextColor(248,255,240);doc.setFontSize(20);doc.setFont('helvetica','bold');doc.text(`Welcome, ${r.fn}.`,M,23);
+    doc.setFontSize(9);doc.setFont('helvetica','normal');doc.setTextColor(234,243,222);doc.text(`Prepared by your Function Health Club Coach  ·  ${dt}`,M,31);
+    const stats=[['HEIGHT',r.ht||'—'],['WEIGHT',r.wt||'—'],['EST. TDEE',r.tdee?r.tdee+' cal':'—'],['ACTIVITY',r.act?r.act.split('(')[0].trim():'—']];
+    const sw=CW/4;
+    stats.forEach(([l,v],i)=>{const x=M+i*sw;doc.setFontSize(7);doc.setTextColor(192,221,151);doc.text(l,x,45);doc.setFontSize(10);doc.setTextColor(248,255,240);doc.setFont('helvetica','bold');doc.text(String(v).substring(0,16),x,54)});
+    doc.setFont('helvetica','normal');y=74;
+    function sec(lbl,title,body){if(y>260){doc.addPage();y=20}doc.setFontSize(7);doc.setTextColor(153,60,29);doc.setFont('helvetica','bold');doc.text(lbl.toUpperCase(),M,y);y+=5;doc.setFontSize(12);doc.setTextColor(31,27,22);doc.setFont('helvetica','bold');doc.text(title,M,y);y+=6;doc.setFontSize(10);doc.setTextColor(62,55,46);doc.setFont('helvetica','normal');doc.splitTextToSize(body||'',CW).forEach(l=>{if(y>275){doc.addPage();y=20}doc.text(l,M,y);y+=5});y+=4;doc.setDrawColor(211,209,199);doc.line(M,y,W-M,y);y+=7}
+    function box(lbl,body,r2,g2,b2){if(y>255){doc.addPage();y=20}doc.setFillColor(r2||244,g2||240,b2||232);const lines=doc.splitTextToSize(body||'',CW-10);const h=lines.length*4.8+11;doc.roundedRect(M,y,CW,h,2,2,'F');doc.setFontSize(7);doc.setTextColor(153,60,29);doc.setFont('helvetica','bold');doc.text(lbl.toUpperCase(),M+5,y+7);doc.setFontSize(10);doc.setTextColor(62,55,46);doc.setFont('helvetica','normal');lines.forEach((l,i)=>doc.text(l,M+5,y+11+i*4.8));y+=h+5}
+    function macRow(p,c,f){if(y>255){doc.addPage();y=20}const cols=[[153,60,29,'PROTEIN',p],[186,117,23,'CARBS',c],[59,109,17,'FATS',f]];const w=CW/3-3;cols.forEach(([r2,g2,b2,label,val],i)=>{const x=M+i*(w+4.5);doc.setFillColor(244,240,232);doc.roundedRect(x,y,w,20,2,2,'F');doc.setFillColor(r2,g2,b2);doc.rect(x,y,w,2,'F');doc.setFontSize(7);doc.setTextColor(r2,g2,b2);doc.setFont('helvetica','bold');doc.text(label,x+4,y+8);doc.setFontSize(11);doc.setTextColor(31,27,22);doc.text(val||'—',x+4,y+16)});y+=26}
+    sec('YOUR GOAL','Primary objective',r.primaryObjective||r.goal||'');
+    box('Strengths already in place',r.strengthsInPlace||r.str||'');
+    sec('ENERGY INPUT','Nutrition strategy',r.nutritionSummary||r.caln||'');
+    box('Daily target',(r.cal||'—')+(r.caln?' — '+r.caln:''));
+    macRow(r.pro,r.carb,r.fat);
+    if(r.meal||r.mealArchitecture)box('Meal architecture',r.mealArchitecture||r.meal);
+    if(r.practicalTool)box('Practical tool',r.practicalTool,250,237,218);
+    if(y>220){doc.addPage();y=20}
+    doc.setFontSize(7);doc.setTextColor(153,60,29);doc.setFont('helvetica','bold');doc.text('PROTEIN TIMING',M,y);y+=6;
+    [['Pre-workout',r.pre],['Post-workout',r.post],['~3:30 PM bridge',r.aft],['Evening strategy',r.eve]].filter(([,v])=>v).forEach(([l,v])=>{if(y>270){doc.addPage();y=20}doc.setFontSize(8);doc.setTextColor(153,60,29);doc.setFont('helvetica','bold');doc.text(l,M,y);doc.setFontSize(10);doc.setTextColor(62,55,46);doc.setFont('helvetica','normal');const lines=doc.splitTextToSize(v,CW-20);lines.forEach((ll,i)=>doc.text(ll,M+20,y+i*5));y+=Math.max(lines.length*5,5)+3});
+    y+=4;doc.setDrawColor(211,209,199);doc.line(M,y,W-M,y);y+=7;
+    sec('ENERGY OUTPUT','Training & movement',r.trainingRec||r.trec||'');
+    if(r.z2||r.zone2Rec)box('Zone 2 & recovery movement',r.zone2Rec||r.z2);
+    if(r.supplementNote)box('Hydration & supplements',(r.supplementNote||'')+(r.supps&&r.supps.length?'\n'+r.supps.join(' · '):''));
+    if(r.alts&&r.alts.length)box('Managing cravings',(r.cravingGuideline||r.cravn||'')+'\nApproved: '+r.alts.join(', '));
+    if(y>220){doc.addPage();y=20}
+    doc.setFontSize(7);doc.setTextColor(153,60,29);doc.setFont('helvetica','bold');doc.text('WEEK 1 FOCUS',M,y);y+=6;
+    if(r.week1Message){doc.setFontSize(10);doc.setTextColor(62,55,46);doc.setFont('helvetica','normal');doc.splitTextToSize(r.week1Message,CW).forEach(l=>{doc.text(l,M,y);y+=5});y+=3}
+    const mets=[[r.m1||'Daily Protein',r.m1d||''],[r.m2||'3pm Energy Score',r.m2d||''],[r.m3||'Recovery Quality',r.m3d||'']];
+    const mw=(CW-8)/3;
+    mets.forEach(([l,],i)=>{const x=M+i*(mw+4);doc.setFillColor(244,240,232);doc.roundedRect(x,y,mw,22,2,2,'F');doc.setFontSize(13);doc.setTextColor(153,60,29);doc.setFont('helvetica','italic');doc.text(String(i+1).padStart(2,'0'),x+4,y+11);doc.setFontSize(8);doc.setTextColor(31,27,22);doc.setFont('helvetica','bold');doc.splitTextToSize(l,mw-8).forEach((ll,j)=>doc.text(ll,x+4,y+17+j*4))});y+=28;
+    if(y>220){doc.addPage();y=20}
+    const cl=doc.splitTextToSize(r.coachClosing||'',CW-14);const ch=cl.length*5.5+22;
+    doc.setFillColor(234,243,222);doc.roundedRect(M,y,CW,ch,3,3,'F');doc.setFontSize(7);doc.setTextColor(59,109,17);doc.setFont('helvetica','bold');doc.text('A NOTE FROM YOUR COACH',M+7,y+9);doc.setFontSize(11);doc.setTextColor(39,80,10);doc.setFont('helvetica','italic');cl.forEach((l,i)=>doc.text(l,M+7,y+17+i*5.5));y+=ch+7;
+    doc.setFontSize(8);doc.setTextColor(132,122,107);doc.setFont('helvetica','normal');doc.text(`Function Health Club · Vancouver & Port Coquitlam  ·  Unleash Your Inner Strength`,M,y);
+    doc.save(`FHC_Assessment_${nm.replace(/\s+/g,'_')}_${new Date().toISOString().slice(0,10)}.pdf`);
+    toast('PDF downloaded!');
+  }catch(e){console.error(e);toast('PDF error — try again')}
+  finally{btn.disabled=false;btn.innerHTML='<i class="ti ti-download" aria-hidden="true"></i> Download PDF'}
+}
+
+(function init(){
+  const d=new Date();
+  const days=['Sunday — rest & reflection day.','Monday — big check-in communication day.','Tuesday — prepare session notes.','Wednesday — nuanced communications day.','Thursday — session review & notes day.','Friday — big check-in communication day.','Saturday — review next week\'s clients.'];
+  const mo=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const dn=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  document.getElementById('de').textContent=`${dn[d.getDay()]} · ${mo[d.getMonth()]} ${d.getDate()} · ${days[d.getDay()]}`;
+  document.getElementById('f-dt').value=d.toISOString().slice(0,10);
+  renderTracker();renderClients();renderTimeline();renderOb();renderResources();renderPlaybook();
+})();
+</script>
