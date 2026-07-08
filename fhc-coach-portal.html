@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FHC Coach Portal — Intake Assessment</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+:root {
+  --g:#5ABE3C; --gd:#3D8A28; --gl:#E8F7E2; --gll:#F2FBF0;
+  --dk:#1A2B3C; --dkm:#2C3E50; --dks:#4A5568;
+  --wh:#FFFFFF; --bg:#F4F6F4;
+  --bdr:rgba(90,190,60,0.18); --bdrm:rgba(90,190,60,0.32);
+  --amber:#F57F17; --orange:#E65100; --purple:#4527A0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;color:var(--dk);font-size:14px;line-height:1.5;background:var(--bg);min-height:100vh}
+
+/* ── LAYOUT ── */
+.shell{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+.sb{background:var(--dk);display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.sb-logo{padding:18px 16px 16px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px}
+.logo-box{width:36px;height:36px;background:rgba(90,190,60,.12);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo-main{font-size:13px;font-weight:700;color:var(--wh);line-height:1.2}
+.logo-main span{color:var(--g)}
+.logo-sub{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.07em;text-transform:uppercase;margin-top:2px}
+.sb-nav{padding:14px 10px;flex:1;overflow-y:auto}
+.ng{margin-bottom:16px}
+.nl{font-size:9px;font-weight:700;color:rgba(255,255,255,.3);letter-spacing:.1em;text-transform:uppercase;padding:0 8px;margin-bottom:6px}
+.nb{display:flex;align-items:center;gap:8px;width:100%;padding:8px 10px;background:none;border:none;border-radius:8px;font-size:12px;color:rgba(255,255,255,.55);cursor:pointer;text-align:left;transition:all .15s;font-family:inherit}
+.nb:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.85)}
+.nb.on{background:var(--g);color:var(--wh);font-weight:600}
+.nb i{font-size:15px;flex-shrink:0}
+.sb-foot{padding:14px 16px;border-top:1px solid rgba(255,255,255,.08)}
+.coach-row{display:flex;align-items:center;gap:8px}
+.coach-av{width:32px;height:32px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--wh);flex-shrink:0}
+.coach-nm{font-size:12px;font-weight:600;color:var(--wh)}
+.coach-rl{font-size:10px;color:rgba(255,255,255,.4)}
+.mn{padding:28px 32px;overflow-y:auto;max-height:100vh}
+
+/* ── VIEWS ── */
+.view{display:none}
+.view.on{display:block}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px;padding-bottom:16px;border-bottom:2px solid var(--gl)}
+.pe{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--g);margin-bottom:4px}
+.pt{font-size:22px;font-weight:700;color:var(--dk)}
+.pm{font-size:11px;color:var(--dks);text-align:right}
+.pn{font-size:22px;font-weight:700;color:var(--dk);display:block;line-height:1}
+
+/* ── BUTTONS ── */
+.btn{padding:9px 16px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--bdrm);background:var(--wh);color:var(--dks);transition:all .12s;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{background:var(--gl);border-color:var(--g);color:var(--gd)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-p{background:var(--g);color:var(--wh);border-color:var(--g)}
+.btn-p:hover{background:var(--gd);border-color:var(--gd)}
+.btn-dk{background:var(--dk);color:var(--wh);border-color:var(--dk);padding:12px 24px;font-size:14px}
+.btn-dk:hover{background:var(--dkm)}
+.btn-dl{background:var(--g);color:var(--wh);border-color:var(--g);padding:12px 24px;font-size:14px}
+.btn-dl:hover{background:var(--gd)}
+
+/* ── TRACKER ── */
+.tracker-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;gap:10px;flex-wrap:wrap}
+.wk-nav{display:flex;align-items:center;gap:8px}
+.wk-btn{background:var(--wh);border:1.5px solid var(--bdrm);width:30px;height:30px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--dk);transition:all .12s}
+.wk-btn:hover{background:var(--gl);border-color:var(--g)}
+.wk-lbl{font-size:14px;font-weight:600;color:var(--dk);min-width:150px;text-align:center}
+.wk-sub{font-size:10px;color:var(--dks);display:block;font-weight:400}
+.tbl-wrap{background:var(--wh);border:1px solid var(--bdr);border-radius:10px;overflow:hidden;margin-bottom:16px}
+.tr{display:grid;grid-template-columns:180px repeat(7,1fr) 60px;align-items:center}
+.trh{background:var(--dk)}
+.trh .tc{font-size:9px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:rgba(255,255,255,.6);padding:11px 5px;text-align:center;line-height:1.3;border:none}
+.trh .tc:first-child{text-align:left;color:var(--g)}
+.tc{padding:11px 5px;text-align:center;border-bottom:1px solid var(--bdr);border-right:1px solid var(--bdr)}
+.tc:last-child{border-right:none}
+.tr:last-child .tc{border-bottom:none}
+.tc-cl{text-align:left!important;padding-left:14px!important}
+.cl-nm{font-size:12px;font-weight:600;color:var(--dk);margin-bottom:1px}
+.cl-cad{font-size:10px;color:var(--g);font-weight:600}
+.chk{width:20px;height:20px;border:2px solid var(--bdrm);border-radius:5px;cursor:pointer;margin:0 auto;display:flex;align-items:center;justify-content:center;background:var(--wh);transition:all .12s;color:transparent}
+.chk:hover{border-color:var(--g);background:var(--gll)}
+.chk.on{background:var(--g);border-color:var(--g);color:var(--wh)}
+.chk i{font-size:12px}
+.dots{display:flex;gap:3px;justify-content:center;cursor:pointer}
+.dot{width:12px;height:12px;border-radius:50%;border:2px solid var(--bdrm);background:var(--wh);transition:all .12s}
+.dot:hover{border-color:var(--g)}
+.dot.on{background:var(--dk);border-color:var(--dk)}
+.dc{font-size:9px;color:var(--dks);margin-top:2px;font-weight:600}
+.pb-bar{height:4px;background:var(--gl);border-radius:2px;overflow:hidden;width:40px;margin:0 auto}
+.pb-fill{height:100%;background:var(--g);transition:width .3s}
+.pb-pct{font-size:9px;color:var(--dks);margin-top:2px;font-weight:600}
+.no-clients{text-align:center;padding:48px 20px;color:var(--dks)}
+.no-clients i{font-size:40px;color:var(--bdrm);display:block;margin-bottom:12px}
+.leg-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.leg-item{background:var(--wh);border:1px solid var(--bdr);border-left:3px solid var(--g);border-radius:8px;padding:11px 14px}
+.leg-key{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--dk);margin-bottom:2px}
+.leg-val{font-size:11px;color:var(--dks)}
+
+/* ── ADD CLIENT MODAL ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(26,43,60,.6);z-index:100;align-items:center;justify-content:center}
+.modal-bg.on{display:flex}
+.modal{background:var(--wh);border-radius:12px;padding:26px;width:440px;max-width:92%;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.modal-title{font-size:17px;font-weight:700;color:var(--dk);margin-bottom:4px}
+.modal-sub{font-size:12px;color:var(--dks);margin-bottom:20px}
+.mfr{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.mfl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--dk);margin-bottom:5px;display:block}
+input.mfi,select.mfi{width:100%;background:var(--gll);border:1.5px solid var(--bdrm);border-radius:8px;padding:10px 12px;font-family:inherit;font-size:13px;color:var(--dk);outline:none;transition:all .12s;appearance:none}
+input.mfi:focus,select.mfi:focus{border-color:var(--g);background:var(--wh);box-shadow:0 0 0 3px rgba(90,190,60,.1)}
+.modal-btns{display:flex;gap:10px;margin-top:18px}
+
+/* ── RESOURCES ── */
+.res-tabs{display:flex;gap:2px;border-bottom:2px solid var(--gl);margin-bottom:18px;overflow-x:auto}
+.res-tab{background:none;border:none;padding:10px 14px;font-family:inherit;font-size:11px;font-weight:700;color:var(--dks);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .12s;white-space:nowrap;text-transform:uppercase;letter-spacing:.05em}
+.res-tab:hover{color:var(--gd)}
+.res-tab.on{color:var(--g);border-bottom-color:var(--g)}
+.res-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.res-card{background:var(--wh);border:1px solid var(--bdr);border-radius:10px;padding:15px;transition:all .15s;display:flex;flex-direction:column}
+.res-card:hover{border-color:var(--g);transform:translateY(-1px);box-shadow:0 4px 16px rgba(90,190,60,.1)}
+.res-type{display:inline-block;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:2px 8px;border-radius:20px;background:var(--gll);color:var(--dks);margin-bottom:8px}
+.res-card.pdf .res-type{background:#FFF3E0;color:var(--orange)}
+.res-card.email .res-type{background:var(--gl);color:var(--gd)}
+.res-card.template .res-type{background:var(--gl);color:var(--gd)}
+.res-card.protocol .res-type{background:#EDE7F6;color:var(--purple)}
+.res-card.tool .res-type{background:#FFF8E1;color:var(--amber)}
+.res-nm{font-size:13px;font-weight:700;color:var(--dk);margin-bottom:4px;line-height:1.3}
+.res-desc{font-size:11px;color:var(--dks);line-height:1.55;margin-bottom:10px;flex:1}
+.res-acts{display:flex;gap:6px;padding-top:10px;border-top:1px dashed var(--bdr)}
+.rb{flex:1;padding:6px;border-radius:7px;font-size:10px;font-weight:700;cursor:pointer;border:1.5px solid var(--bdrm);background:var(--wh);color:var(--dks);transition:all .12s;font-family:inherit;text-transform:uppercase;letter-spacing:.04em}
+.rb:hover{background:var(--gl);border-color:var(--g);color:var(--gd)}
+.rb.p{background:var(--g);color:var(--wh);border-color:var(--g)}
+.rb.p:hover{background:var(--gd)}
+
+/* ── INTAKE FORM ── */
+.intake-steps{display:flex;border-bottom:2px solid var(--gl);background:var(--wh);border-radius:10px 10px 0 0;overflow-x:auto}
+.istep{flex:1;min-width:100px;padding:12px 8px;background:none;border:none;border-bottom:3px solid transparent;font-family:inherit;font-size:10px;font-weight:700;color:var(--dks);cursor:pointer;text-align:center;transition:all .15s;text-transform:uppercase;letter-spacing:.05em;display:flex;flex-direction:column;align-items:center;gap:4px}
+.istep:hover{color:var(--gd);background:var(--gll)}
+.istep.on{color:var(--g);border-bottom-color:var(--g);background:var(--wh)}
+.istep.done{color:var(--gd)}
+.istep-n{width:22px;height:22px;border-radius:50%;border:2px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.istep.on .istep-n{background:var(--g);border-color:var(--g);color:var(--wh)}
+.istep.done .istep-n{background:var(--dk);border-color:var(--dk);color:var(--wh)}
+.iprog{height:4px;background:var(--gl)}
+.iprog-fill{height:100%;background:var(--g);transition:width .4s}
+.intake-body{background:var(--wh);border:1px solid var(--bdr);border-top:none;border-radius:0 0 10px 10px;padding:24px}
+.isec{display:none}
+.isec.on{display:block}
+.ise{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--g);margin-bottom:4px}
+.ist{font-size:20px;font-weight:700;color:var(--dk);margin-bottom:4px}
+.isb{font-size:13px;color:var(--dks);margin-bottom:18px;padding-bottom:14px;border-bottom:2px solid var(--gl)}
+.fr{display:grid;gap:14px;margin-bottom:14px}
+.fr.c2{grid-template-columns:1fr 1fr}
+.fr.c3{grid-template-columns:1fr 1fr 1fr}
+.fr.c4{grid-template-columns:1fr 1fr 1fr 1fr}
+.fg{margin-bottom:14px}
+.fl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--dk);margin-bottom:6px;display:block}
+.fl span{font-style:italic;font-weight:400;text-transform:none;letter-spacing:0;color:var(--dks)}
+input.fi,select.fi,textarea.fi{width:100%;background:var(--gll);border:1.5px solid var(--bdrm);border-radius:8px;padding:10px 12px;font-family:inherit;font-size:13px;color:var(--dk);outline:none;transition:all .12s;appearance:none}
+input.fi:focus,select.fi:focus,textarea.fi:focus{border-color:var(--g);background:var(--wh);box-shadow:0 0 0 3px rgba(90,190,60,.1)}
+input.fi::placeholder,textarea.fi::placeholder{color:#9AADAA}
+textarea.fi{resize:vertical;min-height:76px;line-height:1.6}
+.fh{font-size:11px;color:var(--dks);margin-top:4px;font-style:italic}
+.fdiv{border:none;border-top:2px solid var(--gl);margin:18px 0}
+.fst{font-size:15px;font-weight:700;color:var(--dk);margin-bottom:3px}
+.fss{font-size:12px;color:var(--dks);margin-bottom:12px}
+.tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+.tag{padding:6px 12px;border:1.5px solid var(--bdrm);border-radius:20px;font-size:12px;font-weight:500;color:var(--dks);cursor:pointer;transition:all .12s;user-select:none;background:var(--wh)}
+.tag:hover{border-color:var(--g);color:var(--gd)}
+.tag.sel{background:var(--g);border-color:var(--g);color:var(--wh);font-weight:700}
+.ibtns{display:flex;gap:10px;margin-top:22px;padding-top:16px;border-top:2px solid var(--gl)}
+
+/* ── REVIEW SUMMARY ── */
+.rv-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.rv-card{background:var(--gll);border:1px solid var(--bdr);border-left:3px solid var(--g);border-radius:8px;padding:12px 14px}
+.rv-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g);margin-bottom:3px}
+.rv-val{font-size:13px;font-weight:700;color:var(--dk);margin-bottom:1px}
+.rv-sub{font-size:11px;color:var(--dks);line-height:1.5}
+.gen-actions{display:flex;gap:12px;margin-top:20px;padding-top:18px;border-top:2px solid var(--gl)}
+
+/* ── REPORT PREVIEW ── */
+.rpt-success{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;background:var(--gll);border:1px solid var(--bdr);border-left:3px solid var(--g);border-radius:8px;margin-bottom:14px}
+.rpt-success-t{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g);margin-bottom:2px}
+.rpt-success-s{font-size:14px;font-weight:700;color:var(--dk)}
+.rpt-success-btns{display:flex;gap:10px}
+.rpt{background:var(--wh);border:1px solid var(--bdr);border-radius:10px;overflow:hidden;margin-top:14px}
+.rpt-hdr{background:var(--dk);padding:26px 30px}
+.rpt-hdr-brand{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:rgba(90,190,60,.75);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.rpt-hdr-brand::before{content:'';display:inline-block;width:20px;height:2px;background:var(--g)}
+.rpt-eye{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--g);margin-bottom:6px}
+.rpt-nm{font-size:24px;font-weight:700;color:var(--wh);margin-bottom:3px}
+.rpt-date-line{font-size:11px;color:rgba(255,255,255,.45)}
+.rpt-stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid rgba(90,190,60,.2);margin-top:18px}
+.rpt-sc{padding:13px;border-right:1px solid rgba(90,190,60,.15)}
+.rpt-sc:last-child{border-right:none}
+.rpt-sl{font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--g);opacity:.8;margin-bottom:3px}
+.rpt-sv{font-size:14px;font-weight:700;color:var(--wh)}
+.rpt-body{padding:26px 30px}
+.rpt-sec{margin-bottom:22px;padding-bottom:22px;border-bottom:1px dashed var(--bdr)}
+.rpt-sec:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.rpt-sec-label{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:5px}
+.rpt-sec-title{font-size:16px;font-weight:700;color:var(--dk);margin-bottom:8px}
+.rpt-text{font-size:13px;color:var(--dks);line-height:1.7}
+.rpt-text p{margin-bottom:8px}
+.rpt-text p:last-child{margin-bottom:0}
+.info-box{background:var(--gll);border-radius:8px;padding:14px;border:1px solid var(--bdr)}
+.info-box-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--gd);margin-bottom:4px}
+.info-box-val{font-size:22px;font-weight:700;color:var(--dk);margin-bottom:4px}
+.mac-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}
+.mac{background:var(--gll);border-radius:8px;padding:13px;border-top:3px solid var(--mc)}
+.mac-l{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+.mac-v{font-size:18px;font-weight:700;color:var(--dk);margin-bottom:3px}
+.mac-n{font-size:10px;color:var(--dks);line-height:1.4;font-style:italic}
+.tool-box{margin-top:10px;padding:10px 14px;background:#FFF8E1;border-left:3px solid var(--amber);border-radius:0 8px 8px 0;font-size:12px;color:var(--dk)}
+.tool-box-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--amber);margin-bottom:3px}
+.timing-row{padding:9px 0;border-bottom:1px dashed var(--bdr)}
+.timing-row:last-child{border-bottom:none}
+.timing-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--orange);margin-bottom:2px}
+.train-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.train-card{background:var(--gll);border-radius:8px;padding:13px;border-top:3px solid var(--tc)}
+.train-card-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.supp-box{background:var(--gll);border-radius:8px;padding:12px;margin-top:10px;border:1px solid var(--bdr)}
+.supp-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--gd);margin-bottom:4px}
+.alt-pills{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.alt-pill{padding:4px 12px;background:var(--gll);border:1px solid var(--bdrm);border-radius:20px;font-size:12px;font-weight:600;color:var(--gd)}
+.metric-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+.metric-card{background:var(--gll);border-radius:8px;padding:13px;border:1px solid var(--bdr);border-top:3px solid var(--g)}
+.metric-num{font-size:22px;font-weight:700;color:var(--g);margin-bottom:6px;font-family:Georgia,serif}
+.metric-title{font-weight:700;font-size:13px;color:var(--dk);margin-bottom:3px}
+.metric-desc{font-size:11px;color:var(--dks);line-height:1.5}
+.closing-box{background:var(--dk);border-radius:8px;padding:22px;margin-top:12px}
+.closing-eye{font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--g);margin-bottom:8px}
+.closing-txt{font-size:13px;line-height:1.7;color:rgba(255,255,255,.88)}
+.closing-ft{font-size:10px;color:rgba(255,255,255,.3);margin-top:12px}
+.strengths-box{background:var(--gll);border-left:3px solid var(--g);border-radius:0 8px 8px 0;padding:12px 14px;font-size:13px;color:var(--dkm);font-style:italic;line-height:1.65;margin-top:8px}
+
+/* ── REASSESSMENT ── */
+.coming-soon{text-align:center;padding:70px 30px}
+.coming-soon-icon{font-size:52px;color:var(--bdrm);margin-bottom:18px;display:block}
+.coming-soon-t{font-size:20px;font-weight:700;color:var(--dk);margin-bottom:8px}
+.coming-soon-s{font-size:13px;color:var(--dks);line-height:1.7;max-width:420px;margin:0 auto 22px}
+
+/* ── TOAST ── */
+#toast{position:fixed;bottom:18px;right:18px;background:var(--dk);color:var(--wh);padding:10px 18px;border-radius:8px;font-size:13px;font-weight:600;border-left:3px solid var(--g);opacity:0;transform:translateY(10px);transition:all .25s;pointer-events:none;z-index:999}
+#toast.on{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+<!-- ═══ SIDEBAR ═══ -->
+<aside class="sb">
+  <div class="sb-logo">
+    <div class="logo-box">
+      <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+        <rect x="2" y="9" width="18" height="2.5" rx="1.25" fill="#5ABE3C"/>
+        <rect x="2" y="12.5" width="18" height="2.5" rx="1.25" fill="#5ABE3C"/>
+        <rect x="7" y="4" width="8" height="14" rx="3" fill="none" stroke="#5ABE3C" stroke-width="2"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-main">Function <span>Health</span>Club</div>
+      <div class="logo-sub">Coach Portal</div>
+    </div>
+  </div>
+
+  <div class="sb-nav">
+    <div class="ng">
+      <div class="nl">Coach tools</div>
+      <button class="nb on" data-v="tracker"><i class="ti ti-calendar-week"></i>Weekly tracker</button>
+      <button class="nb" data-v="resources"><i class="ti ti-books"></i>Resource library</button>
+    </div>
+    <div class="ng">
+      <div class="nl">Client assessments</div>
+      <button class="nb" data-v="intake"><i class="ti ti-clipboard-text"></i>Intake assessment</button>
+      <button class="nb" data-v="reassess"><i class="ti ti-chart-line"></i>Reassessment <span style="font-size:9px;background:rgba(255,255,255,.12);padding:1px 6px;border-radius:10px;margin-left:2px">Soon</span></button>
+    </div>
+  </div>
+
+  <div class="sb-foot">
+    <div class="coach-row">
+      <div class="coach-av">MA</div>
+      <div><div class="coach-nm">Marissa</div><div class="coach-rl">Health Coach · Lead</div></div>
+    </div>
+  </div>
+</aside>
+
+<!-- ═══ MAIN ═══ -->
+<main class="mn">
+
+<!-- ════════════════ WEEKLY TRACKER ════════════════ -->
+<div class="view on" id="v-tracker">
+  <div class="ph">
+    <div><div class="pe">Coach operating system</div><div class="pt">Weekly tracker</div></div>
+    <div class="pm"><span class="pn" id="client-count">0</span>clients tracked</div>
+  </div>
+
+  <div class="tracker-top">
+    <div class="wk-nav">
+      <button class="wk-btn" id="wk-prev"><i class="ti ti-chevron-left"></i></button>
+      <div class="wk-lbl"><span id="wk-txt">Loading...</span><span class="wk-sub" id="wk-sub"></span></div>
+      <button class="wk-btn" id="wk-next"><i class="ti ti-chevron-right"></i></button>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn" id="wk-reset"><i class="ti ti-refresh"></i>Reset week</button>
+      <button class="btn btn-p" id="add-client-btn"><i class="ti ti-user-plus"></i>Add client</button>
+    </div>
+  </div>
+
+  <div class="tbl-wrap"><div id="tbl-inner"></div></div>
+  <div class="no-clients" id="no-clients" style="display:none">
+    <i class="ti ti-users"></i>
+    <div style="font-size:15px;font-weight:600;color:var(--dk);margin-bottom:6px">No clients yet</div>
+    <div style="font-size:13px;margin-bottom:18px">Add your first client to start tracking weekly tasks.</div>
+    <button class="btn btn-p" onclick="document.getElementById('add-client-btn').click()"><i class="ti ti-user-plus"></i>Add first client</button>
+  </div>
+
+  <div class="leg-grid">
+    <div class="leg-item"><div class="leg-key">CoachRx Touchpoints</div><div class="leg-val">2-3 specific replies to client logs per week. Click dots to log each. The relationship-builder.</div></div>
+    <div class="leg-item"><div class="leg-key">Mon / Fri Big Pulse</div><div class="leg-val">Mon opens the week. Fri closes it with weekend strategy + reflection by 3 PM.</div></div>
+    <div class="leg-item"><div class="leg-key">CoachRx Edit</div><div class="leg-val">Weekly automated check-in customized per client — never generic, always tuned to current focus.</div></div>
+    <div class="leg-item"><div class="leg-key">Care Touch</div><div class="leg-val">One human moment beyond protocol — voice note, article, recognition. Don't drop this.</div></div>
+  </div>
+</div>
+
+<!-- ════════════════ RESOURCE LIBRARY ════════════════ -->
+<div class="view" id="v-resources">
+  <div class="ph">
+    <div><div class="pe">Evergreen materials</div><div class="pt">Resource library</div></div>
+    <div class="pm"><span class="pn" id="res-count">0</span>resources</div>
+  </div>
+  <div class="res-tabs" id="res-tabs">
+    <button class="res-tab on" data-cat="all">All</button>
+    <button class="res-tab" data-cat="onboarding">Onboarding</button>
+    <button class="res-tab" data-cat="nutrition">Nutrition</button>
+    <button class="res-tab" data-cat="training">Training & recovery</button>
+    <button class="res-tab" data-cat="milestones">Milestones</button>
+    <button class="res-tab" data-cat="coachrx">CoachRx templates</button>
+    <button class="res-tab" data-cat="protocols">Coach protocols</button>
+  </div>
+  <div class="res-grid" id="res-grid"></div>
+</div>
+
+<!-- ════════════════ INTAKE ASSESSMENT ════════════════ -->
+<div class="view" id="v-intake">
+  <div class="ph">
+    <div><div class="pe">Client lifecycle · Step 01</div><div class="pt">Intake assessment</div></div>
+    <div class="pm">Fill in the form.<br/><strong>Generate the report instantly.</strong></div>
+  </div>
+
+  <div class="intake-steps">
+    <button class="istep on" data-s="0"><span class="istep-n">1</span>Client info</button>
+    <button class="istep" data-s="1"><span class="istep-n">2</span>Goals & nutrition</button>
+    <button class="istep" data-s="2"><span class="istep-n">3</span>Training</button>
+    <button class="istep" data-s="3"><span class="istep-n">4</span>Lifestyle</button>
+    <button class="istep" data-s="4"><span class="istep-n">5</span>Generate</button>
+  </div>
+  <div class="iprog"><div class="iprog-fill" id="ipf" style="width:20%"></div></div>
+
+  <div class="intake-body">
+
+    <!-- SECTION 1 -->
+    <div class="isec on" id="is-0">
+      <div class="ise">Section 01 of 05</div>
+      <div class="ist">Client info</div>
+      <p class="isb">Baseline snapshot confirmed at the start of the session.</p>
+      <div class="fr c2">
+        <div><label class="fl">First name</label><input class="fi" id="fn" placeholder="e.g. Kathleen"/></div>
+        <div><label class="fl">Last name</label><input class="fi" id="ln" placeholder="e.g. Sullivan"/></div>
+      </div>
+      <div class="fr c4">
+        <div><label class="fl">Date of assessment</label><input class="fi" type="date" id="dt"/></div>
+        <div><label class="fl">Age</label><input class="fi" type="number" id="age" placeholder="42" min="16" max="99"/></div>
+        <div><label class="fl">Sex</label><select class="fi" id="sex"><option value="">Select</option><option>Female</option><option>Male</option><option>Other</option></select></div>
+        <div><label class="fl">Height</label><input class="fi" id="ht" placeholder="5'8&quot;"/></div>
+      </div>
+      <div class="fr c3">
+        <div><label class="fl">Current weight</label><input class="fi" id="wt" placeholder="187 lbs"/></div>
+        <div><label class="fl">Est. TDEE <span>(cal/day)</span></label><input class="fi" type="number" id="tdee" placeholder="2400"/></div>
+        <div><label class="fl">Goal weight <span>(optional)</span></label><input class="fi" id="gwt" placeholder="172 lbs"/></div>
+      </div>
+      <div class="fg">
+        <label class="fl">Activity level</label>
+        <select class="fi" id="act">
+          <option value="">Select current level</option>
+          <option>Sedentary (desk job, little movement)</option>
+          <option>Lightly active (walks, light exercise 1-2x/wk)</option>
+          <option>Moderately active (3-4x/wk structured training)</option>
+          <option>Active (5+ days training, physical job)</option>
+          <option>Very active (daily intense training, athlete)</option>
+        </select>
+      </div>
+      <div class="fg"><label class="fl">Training description <span>(in their words)</span></label><textarea class="fi" id="td" placeholder="e.g. CrossFit 3-4 mornings a week and a 30-45 min walk most days. Been at this for about 2 years..."></textarea></div>
+      <div class="fg"><label class="fl">Medical notes <span>(diagnoses, medications, contraindications)</span></label><textarea class="fi" id="med" placeholder="e.g. No current diagnoses. Takes magnesium and vitamin D. Family history of thyroid issues..." style="min-height:60px"></textarea></div>
+      <div class="ibtns">
+        <button class="btn btn-p" onclick="goS(1)">Continue <i class="ti ti-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="isec" id="is-1">
+      <div class="ise">Section 02 of 05</div>
+      <div class="ist">Goals & nutrition</div>
+      <p class="isb">Primary objective and nutrition targets — these appear directly in the report.</p>
+      <div class="fg"><label class="fl">Primary goal <span>(use their language)</span></label><textarea class="fi" id="goal" placeholder="e.g. Body recomposition — lose fat while keeping the muscle I've built through CrossFit. I want to feel strong and lean, not just lighter on the scale..."></textarea></div>
+      <div class="fg"><label class="fl">What does success look and feel like? <span>(their words)</span></label><textarea class="fi" id="succ" placeholder="e.g. Wake up with energy, stop having the 3pm crash, and feel proud when I look in the mirror..."></textarea></div>
+      <div class="fg"><label class="fl">Strengths already in place <span>(positive framing — what's working)</span></label><textarea class="fi" id="str" placeholder="e.g. Already training consistently 3-4x/week. Drinks 40oz water daily. Avoids fasted training — great for cortisol management..."></textarea></div>
+      <hr class="fdiv"/>
+      <div class="fst">Nutrition targets</div>
+      <div class="fss">These numbers appear in the report exactly as entered.</div>
+      <div class="fr c2">
+        <div><label class="fl">Daily calorie target</label><input class="fi" id="cal" placeholder="e.g. 2,100-2,200 cal"/><div class="fh">Typically 10-15% deficit for fat loss</div></div>
+        <div><label class="fl">Calorie strategy note <span>(why these calories)</span></label><textarea class="fi" id="caln" placeholder="e.g. A modest 10-15% deficit from TDEE — enough to drive fat loss without compromising muscle or CrossFit performance..." style="min-height:60px"></textarea></div>
+      </div>
+      <div class="fr c3">
+        <div><label class="fl">Protein target</label><input class="fi" id="pro" placeholder="e.g. 150-187g"/><div class="fh">~1g per lb bodyweight</div></div>
+        <div><label class="fl">Carbohydrate target</label><input class="fi" id="carb" placeholder="e.g. 190-220g"/></div>
+        <div><label class="fl">Fat target</label><input class="fi" id="fat" placeholder="e.g. 55-70g"/></div>
+      </div>
+      <div class="fg"><label class="fl">Macro rationale <span>(why these numbers for this client)</span></label><textarea class="fi" id="macr" placeholder="e.g. High protein is critical for women 40+ to overcome anabolic resistance. Carbs timed around CrossFit for performance and recovery..."></textarea></div>
+      <div class="fg"><label class="fl">Meal architecture <span>(how to structure meals through the day)</span></label><textarea class="fi" id="meal" placeholder="e.g. POWER LUNCH = biggest carb bolus + full protein serving. DINNER = Rest & Recover — high-fibre veg + lean protein + healthy fat..."></textarea></div>
+      <div class="fg"><label class="fl">Practical tool recommendation</label><input class="fi" id="tool" placeholder="e.g. Invest in a kitchen scale — the difference between estimating and weighing 6oz chicken can be 20-30g protein per meal"/></div>
+      <div class="ibtns">
+        <button class="btn" onclick="goS(0)"><i class="ti ti-arrow-left"></i> Back</button>
+        <button class="btn btn-p" onclick="goS(2)">Continue <i class="ti ti-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="isec" id="is-2">
+      <div class="ise">Section 03 of 05</div>
+      <div class="ist">Training & movement</div>
+      <p class="isb">Current output, coaching recommendations, protein timing, and supplements.</p>
+      <div class="fr c2">
+        <div><label class="fl">Primary training type</label>
+          <select class="fi" id="ttype">
+            <option value="">Select modality</option>
+            <option>CrossFit / Functional fitness</option>
+            <option>Weightlifting / Powerlifting</option>
+            <option>Bodybuilding / Hypertrophy</option>
+            <option>Running / Endurance</option>
+            <option>HIIT / Group fitness</option>
+            <option>Mixed / General fitness</option>
+            <option>Minimal / Just starting</option>
+          </select>
+        </div>
+        <div><label class="fl">Training frequency</label>
+          <select class="fi" id="tfreq">
+            <option value="">Select frequency</option>
+            <option>1-2x per week</option>
+            <option>3-4x per week</option>
+            <option>5-6x per week</option>
+            <option>Daily</option>
+            <option>Inconsistent</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Training recommendation <span>(your coaching note for the report)</span></label><textarea class="fi" id="trec" placeholder="e.g. Keep CrossFit at 3-4x per week — current output is spot on for recomp. Progressive overload within sessions is the lever, not more frequency. Morning sessions align well with cortisol curve..."></textarea></div>
+      <div class="fg"><label class="fl">Zone 2 / recovery movement recommendation</label><textarea class="fi" id="z2" placeholder="e.g. Brisk walks or weighted vest walks on off-days. Zone 2 allows the nervous and endocrine systems to recover from CrossFit intensity while still burning fat actively..."></textarea></div>
+      <hr class="fdiv"/>
+      <div class="fst">Protein timing</div>
+      <div class="fss">Specific windows tied to their actual training schedule.</div>
+      <div class="fr c2">
+        <div><label class="fl">Pre-workout</label><textarea class="fi" id="pre" placeholder="e.g. ~15g protein — sourdough + cottage cheese. Avoids fasted training for cortisol management. Small, easy to digest." style="min-height:70px"></textarea></div>
+        <div><label class="fl">Post-workout</label><textarea class="fi" id="post" placeholder="e.g. 30-40g within 45 min — protein shake with oats blended in. Replenishes glycogen and starts muscle recovery immediately." style="min-height:70px"></textarea></div>
+      </div>
+      <div class="fr c2">
+        <div><label class="fl">~3:30 PM bridge</label><textarea class="fi" id="aft" placeholder="e.g. Greek yogurt + berries, or a turkey wrap. Dense protein + healthy fat blunts evening cravings and prevents the energy crash." style="min-height:70px"></textarea></div>
+        <div><label class="fl">Evening strategy</label><textarea class="fi" id="eve" placeholder="e.g. If cravings hit — choose wine OR a small treat, not both. Combining raises pro-inflammatory load and disrupts sleep quality." style="min-height:70px"></textarea></div>
+      </div>
+      <hr class="fdiv"/>
+      <div class="fst">Hydration & supplements</div>
+      <div class="fr c2">
+        <div><label class="fl">Hydration protocol</label><input class="fi" id="hyd" placeholder="e.g. 40oz lemon water daily + pinch sea salt for electrolytes"/></div>
+        <div>
+          <label class="fl">Supplement stack <span>(click to select)</span></label>
+          <div class="tags" id="sup-tags">
+            <span class="tag" data-v="Vitamin D">Vitamin D</span>
+            <span class="tag" data-v="Magnesium">Magnesium</span>
+            <span class="tag" data-v="Vitamin B Complex">Vitamin B Complex</span>
+            <span class="tag" data-v="Creatine">Creatine</span>
+            <span class="tag" data-v="Omega-3">Omega-3</span>
+            <span class="tag" data-v="Protein Powder">Protein Powder</span>
+            <span class="tag" data-v="Probiotics">Probiotics</span>
+            <span class="tag" data-v="Collagen">Collagen</span>
+            <span class="tag" data-v="Iron">Iron</span>
+            <span class="tag" data-v="Zinc">Zinc</span>
+          </div>
+          <input class="fi" id="supx" placeholder="+ other supplements..." style="margin-top:8px"/>
+        </div>
+      </div>
+      <div class="ibtns">
+        <button class="btn" onclick="goS(1)"><i class="ti ti-arrow-left"></i> Back</button>
+        <button class="btn btn-p" onclick="goS(3)">Continue <i class="ti ti-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="isec" id="is-3">
+      <div class="ise">Section 04 of 05</div>
+      <div class="ist">Lifestyle & habits</div>
+      <p class="isb">Sleep, stress, cravings, and Week 1 daily check-ins the client will track.</p>
+      <div class="fr c2">
+        <div><label class="fl">Sleep quality</label>
+          <select class="fi" id="slq">
+            <option value="">Select</option>
+            <option>Excellent (7-9hrs, wake refreshed)</option>
+            <option>Good (6-7hrs, mostly restful)</option>
+            <option>Fair (5-6hrs or frequently disrupted)</option>
+            <option>Poor (under 5hrs or severely disrupted)</option>
+          </select>
+        </div>
+        <div><label class="fl">Average hours per night</label><input class="fi" type="number" id="slh" placeholder="e.g. 6.5" min="3" max="12" step="0.5"/></div>
+      </div>
+      <div class="fg"><label class="fl">Top 3 current stressors <span>(in their words)</span></label><textarea class="fi" id="stress" placeholder="e.g. 1) Work deadlines and back-to-back meetings  2) Managing the kids' schedules  3) Financial pressure from home renovation..." style="min-height:70px"></textarea></div>
+      <div class="fg"><label class="fl">Craving patterns <span>(when, what, triggers)</span></label><textarea class="fi" id="crav" placeholder="e.g. Evening sweets — especially after dinner or a glass of wine. Chocolate, candy, ice cream. Worse on high-stress days or when sleep was poor..."></textarea></div>
+      <hr class="fdiv"/>
+      <div class="fst">Craving alternatives <span style="font-size:13px;font-weight:400;color:var(--dks)">(click to select what to recommend)</span></div>
+      <div class="tags" id="alt-tags">
+        <span class="tag sel" data-v="SmartSweets">SmartSweets</span>
+        <span class="tag sel" data-v="Mid-Day Squares">Mid-Day Squares</span>
+        <span class="tag sel" data-v="RXBAR">RXBAR</span>
+        <span class="tag" data-v="Quest Bar">Quest Bar</span>
+        <span class="tag" data-v="Greek Yogurt + Honey">Greek Yogurt + Honey</span>
+        <span class="tag" data-v="Dark Chocolate (85%+)">Dark Chocolate (85%+)</span>
+        <span class="tag" data-v="Rice Cakes + PB">Rice Cakes + PB</span>
+        <span class="tag" data-v="Protein Ice Cream">Protein Ice Cream</span>
+      </div>
+      <div class="fg" style="margin-top:12px"><label class="fl">Craving guideline note</label><textarea class="fi" id="cravn" placeholder="e.g. Choose one evening treat — not combined with wine. SmartSweets for something light; Mid-Day Squares or RXBAR when you need something more filling..."></textarea></div>
+      <hr class="fdiv"/>
+      <div class="fst">Week 1 focus — 3 daily check-ins</div>
+      <div class="fss">Signal, not score. These are what the client tracks daily in their first week.</div>
+      <div class="fr c3">
+        <div><label class="fl">Metric 1</label><input class="fi" id="m1" value="Daily Protein"/><input class="fi" id="m1d" placeholder="Hit 150g or more. This is your non-negotiable." style="margin-top:8px"/></div>
+        <div><label class="fl">Metric 2</label><input class="fi" id="m2" value="3pm Energy Score"/><input class="fi" id="m2d" placeholder="Rate yourself 1-10 at 3pm each day." style="margin-top:8px"/></div>
+        <div><label class="fl">Metric 3</label><input class="fi" id="m3" value="Recovery Quality"/><input class="fi" id="m3d" placeholder="How did you feel waking up? Note sleep, soreness, mood." style="margin-top:8px"/></div>
+      </div>
+      <div class="fg"><label class="fl">Coach's closing note <span>(personal note from you to the client — goes in the report)</span></label><textarea class="fi" id="notes" placeholder="e.g. You came into this session with so much awareness of what's been holding you back. Your drive is already there — we're simply giving it the right structure. The next 12 weeks are going to surprise you." style="min-height:100px"></textarea></div>
+      <div class="ibtns">
+        <button class="btn" onclick="goS(2)"><i class="ti ti-arrow-left"></i> Back</button>
+        <button class="btn btn-p" onclick="goS(4)">Review & generate <i class="ti ti-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- SECTION 5: REVIEW & GENERATE -->
+    <div class="isec" id="is-4">
+      <div class="ise">Section 05 of 05 · Final step</div>
+      <div class="ist">Review & generate report</div>
+      <p class="isb">Review the summary below. Click Generate Report — the full branded FHC report builds instantly and downloads as a PDF.</p>
+
+      <div class="rv-grid" id="rv-grid"></div>
+
+      <div id="rpt-out" style="display:none">
+        <div class="rpt-success">
+          <div>
+            <div class="rpt-success-t">✓ Report ready</div>
+            <div class="rpt-success-s">Download the branded PDF below</div>
+          </div>
+          <div class="rpt-success-btns">
+            <button class="btn" onclick="resetRpt()"><i class="ti ti-refresh"></i> New report</button>
+            <button class="btn btn-dl" id="dl-btn"><i class="ti ti-download"></i> Download PDF</button>
+          </div>
+        </div>
+        <div class="rpt" id="rpt-preview"></div>
+      </div>
+
+      <div id="gen-ctrl">
+        <div class="gen-actions">
+          <button class="btn" onclick="goS(3)"><i class="ti ti-arrow-left"></i> Back</button>
+          <button class="btn btn-dk" id="gen-btn"><i class="ti ti-file-text"></i> Generate report</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /intake-body -->
+</div><!-- /v-intake -->
+
+<!-- ════════════════ REASSESSMENT ════════════════ -->
+<div class="view" id="v-reassess">
+  <div class="ph"><div><div class="pe">Client lifecycle · Step 02</div><div class="pt">Reassessment</div></div></div>
+  <div class="coming-soon">
+    <i class="ti ti-chart-line coming-soon-icon"></i>
+    <div class="coming-soon-t">Reassessment — coming next</div>
+    <p class="coming-soon-s">The reassessment flow will compare the client's current state against their initial assessment, generate a visual progress report highlighting wins and adjustments, and produce an updated coaching report for the review session.</p>
+    <button class="btn btn-p" onclick="nav('intake')"><i class="ti ti-clipboard-text"></i>Go to intake assessment</button>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- ════════════════ ADD CLIENT MODAL ════════════════ -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <div class="modal-title">Add client to tracker</div>
+    <div class="modal-sub">Client details appear in the weekly tracker immediately and persist across the session.</div>
+    <div class="mfr">
+      <div><label class="mfl">First name</label><input class="mfi" id="m-fn" placeholder="e.g. Kathleen"/></div>
+      <div><label class="mfl">Last name</label><input class="mfi" id="m-ln" placeholder="e.g. Sullivan"/></div>
+    </div>
+    <div class="mfr">
+      <div><label class="mfl">Session cadence</label>
+        <select class="mfi" id="m-cad">
+          <option value="Biweekly">Biweekly</option>
+          <option value="Monthly">Monthly</option>
+          <option value="Weekly">Weekly</option>
+        </select>
+      </div>
+      <div><label class="mfl">Current stage</label><input class="mfi" id="m-stage" placeholder="e.g. Wk 1/12 or Day 0"/></div>
+    </div>
+    <div class="modal-btns">
+      <button class="btn" style="flex:1" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-p" style="flex:1" onclick="saveClient()"><i class="ti ti-user-plus"></i>Add to tracker</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ════════ STATE ════════
+const ST = {
+  wk: 0,
+  wkData: {},
+  clients: [],
+  resCat: 'all',
+  iSec: 0,
+  supps: new Set(),
+  alts: new Set(['SmartSweets','Mid-Day Squares','RXBAR'])
+};
+
+function loadSaved() {
+  try {
+    const c = localStorage.getItem('fhc_clients');
+    if (c) ST.clients = JSON.parse(c);
+    const w = localStorage.getItem('fhc_wkdata');
+    if (w) ST.wkData = JSON.parse(w);
+  } catch(e) {}
+}
+function saveClients() {
+  try { localStorage.setItem('fhc_clients', JSON.stringify(ST.clients)); } catch(e) {}
+}
+function saveWkData() {
+  try { localStorage.setItem('fhc_wkdata', JSON.stringify(ST.wkData)); } catch(e) {}
+}
+
+function gv(id) { const e = document.getElementById(id); return e ? e.value.trim() : ''; }
+
+function toast(m) {
+  const t = document.getElementById('toast');
+  t.textContent = m; t.classList.add('on');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('on'), 2800);
+}
+
+// ════════ NAVIGATION ════════
+function nav(v) {
+  document.querySelectorAll('.nb').forEach(b => b.classList.toggle('on', b.dataset.v === v));
+  document.querySelectorAll('.view').forEach(x => x.classList.remove('on'));
+  document.getElementById('v-' + v).classList.add('on');
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.nb').forEach(b => b.addEventListener('click', () => nav(b.dataset.v)));
+
+// ════════ TRACKER ════════
+const TASKS = [
+  {k:'tp', l:'CoachRx<br>Touchpoints', t:'dots', max:3},
+  {k:'mon', l:'Mon<br>Pulse', t:'chk'},
+  {k:'fri', l:'Fri<br>Pulse', t:'chk'},
+  {k:'rxe', l:'CoachRx<br>Edit', t:'chk'},
+  {k:'ses', l:'Session<br>+Notes', t:'chk'},
+  {k:'nxt', l:'Next<br>Booked', t:'chk'},
+  {k:'care', l:'Care<br>Touch', t:'chk'}
+];
+
+function wkKey(o) {
+  const d = new Date(); d.setDate(d.getDate() + o*7);
+  const s = new Date(d); s.setDate(d.getDate() - d.getDay());
+  return s.toISOString().slice(0,10);
+}
+function wkLabel(o) {
+  const d = new Date(); d.setDate(d.getDate() + o*7);
+  const s = new Date(d); s.setDate(d.getDate() - d.getDay());
+  return 'Week of ' + ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][s.getMonth()] + ' ' + s.getDate();
+}
+function wkNum(o) {
+  const d = new Date(); d.setDate(d.getDate() + o*7);
+  const s = new Date(d.getFullYear(),0,1);
+  return Math.ceil((Math.floor((d-s)/864e5)+s.getDay()+1)/7);
+}
+
+function renderTracker() {
+  const wk = wkKey(ST.wk);
+  if (!ST.wkData[wk]) ST.wkData[wk] = {};
+  document.getElementById('wk-txt').textContent = wkLabel(ST.wk);
+  document.getElementById('wk-sub').textContent = 'Week ' + wkNum(ST.wk) + ' · ' + new Date().getFullYear();
+  document.getElementById('client-count').textContent = ST.clients.length;
+  const inner = document.getElementById('tbl-inner');
+  const noC = document.getElementById('no-clients');
+  if (!ST.clients.length) { inner.innerHTML=''; noC.style.display='block'; return; }
+  noC.style.display = 'none';
+  let h = '<div class="tr trh"><div class="tc" style="text-align:left;padding-left:14px">Client</div>' + TASKS.map(t=>'<div class="tc">'+t.l+'</div>').join('') + '<div class="tc">Done</div></div>';
+  ST.clients.forEach(c => {
+    if (!ST.wkData[wk][c.id]) ST.wkData[wk][c.id] = {};
+    const d = ST.wkData[wk][c.id]; let done=0;
+    TASKS.forEach(t => { if(t.t==='dots'){if((d[t.k]||0)>=t.max)done++}else{if(d[t.k])done++} });
+    const pct = Math.round(done/TASKS.length*100);
+    h += '<div class="tr"><div class="tc tc-cl"><div class="cl-nm">'+c.nm+'</div><div class="cl-cad">'+(c.stage?c.stage+' · ':'')+c.cad+'</div></div>';
+    h += TASKS.map(t => {
+      if (t.t==='dots') { const ct=d[t.k]||0; return '<div class="tc"><div class="dots" data-c="'+c.id+'" data-k="'+t.k+'" data-m="'+t.max+'">'+[0,1,2].map(i=>'<div class="dot'+(i<ct?' on':'')+'"></div>').join('')+'</div><div class="dc">'+ct+'/'+t.max+'</div></div>'; }
+      return '<div class="tc"><div class="chk'+(d[t.k]?' on':'')+'" data-c="'+c.id+'" data-k="'+t.k+'"><i class="ti ti-check"></i></div></div>';
+    }).join('');
+    h += '<div class="tc"><div class="pb-bar"><div class="pb-fill" style="width:'+pct+'%"></div></div><div class="pb-pct">'+pct+'%</div></div></div>';
+  });
+  inner.innerHTML = h;
+  inner.querySelectorAll('.chk').forEach(el => el.addEventListener('click', () => {
+    ST.wkData[wk][el.dataset.c][el.dataset.k] = !ST.wkData[wk][el.dataset.c][el.dataset.k];
+    saveWkData(); renderTracker();
+  }));
+  inner.querySelectorAll('.dots').forEach(el => el.addEventListener('click', () => {
+    const d=ST.wkData[wk][el.dataset.c], k=el.dataset.k, m=+el.dataset.m;
+    d[k] = ((d[k]||0)+1)>m ? 0 : (d[k]||0)+1;
+    saveWkData(); renderTracker();
+  }));
+}
+
+document.getElementById('wk-prev').addEventListener('click', () => { ST.wk--; renderTracker(); });
+document.getElementById('wk-next').addEventListener('click', () => { ST.wk++; renderTracker(); });
+document.getElementById('wk-reset').addEventListener('click', () => { ST.wkData[wkKey(ST.wk)]= {}; saveWkData(); renderTracker(); toast('Week reset'); });
+
+// ════════ ADD CLIENT MODAL ════════
+document.getElementById('add-client-btn').addEventListener('click', openModal);
+function openModal() {
+  ['m-fn','m-ln','m-stage'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('m-cad').value = 'Biweekly';
+  document.getElementById('modal-bg').classList.add('on');
+  setTimeout(() => document.getElementById('m-fn').focus(), 60);
+}
+function closeModal() { document.getElementById('modal-bg').classList.remove('on'); }
+document.getElementById('modal-bg').addEventListener('click', e => { if (e.target===document.getElementById('modal-bg')) closeModal(); });
+function saveClient() {
+  const fn = document.getElementById('m-fn').value.trim();
+  if (!fn) { document.getElementById('m-fn').focus(); toast('Enter at least a first name'); return; }
+  const ln = document.getElementById('m-ln').value.trim();
+  const client = { id:'c_'+Date.now(), nm:fn+(ln?' '+ln:''), cad:document.getElementById('m-cad').value, stage:document.getElementById('m-stage').value.trim() };
+  ST.clients.push(client); saveClients(); closeModal(); renderTracker();
+  toast(client.nm + ' added to tracker ✓');
+}
+['m-fn','m-ln','m-stage'].forEach(id => document.getElementById(id).addEventListener('keydown', e => { if(e.key==='Enter') saveClient(); }));
+
+// ════════ RESOURCES ════════
+const RESOURCES = [
+  {cat:'onboarding',type:'email',nm:'Welcome email template',desc:'First email within 2 hrs of signing. Sets the tone for everything that follows.'},
+  {cat:'onboarding',type:'pdf',nm:'FHC welcome package',desc:'The complete welcome PDF — what to expect, how we work together, the FHC philosophy.'},
+  {cat:'onboarding',type:'pdf',nm:'Pre-session intake form',desc:'Sent before assessment. Captures lifestyle, history, current state, and food journal.'},
+  {cat:'onboarding',type:'template',nm:'Review session run sheet',desc:'Step-by-step coach guide for walking clients through the assessment report.'},
+  {cat:'onboarding',type:'template',nm:'30-day roadmap template',desc:'The personalized plan co-created at the end of the review session.'},
+  {cat:'nutrition',type:'pdf',nm:'3-day sample meal plan',desc:'Two training days + one recovery day. Personalize per client food preferences.'},
+  {cat:'nutrition',type:'pdf',nm:'Protein timing cheat sheet',desc:'Pre / post / 3pm / evening — pocket-sized client reference card.'},
+  {cat:'nutrition',type:'pdf',nm:'Sugar craving alternatives guide',desc:'SmartSweets, Mid-Day Squares, RXBAR — with guidance on when to use each.'},
+  {cat:'nutrition',type:'tool',nm:'Grocery reset checklist',desc:'One-page kitchen reset. No extreme rules. For clients starting fresh.'},
+  {cat:'nutrition',type:'pdf',nm:'Recipe pack — 14 easy dinners',desc:'High-protein, training-aware, real-food recipes. Forgiving for tired weeknights.'},
+  {cat:'nutrition',type:'pdf',nm:'Hunger & fullness scale',desc:'10-point body-awareness scale. Use during the eating-rhythm phase.'},
+  {cat:'training',type:'pdf',nm:'Zone 2 walking protocol',desc:'Why walking is criminally underrated. 4-week build + weighted vest progression.'},
+  {cat:'training',type:'pdf',nm:'CrossFit recovery stack',desc:'Sleep, hydration, mobility protocols for clients training 3-4x weekly.'},
+  {cat:'training',type:'tool',nm:'Hydration & supplements guide',desc:'40oz lemon water + sea salt + standard supplement stack. Client handout.'},
+  {cat:'training',type:'pdf',nm:'Body-weight sequence (travel)',desc:'No equipment, 12 minutes. For travel weeks or low-time periods.'},
+  {cat:'training',type:'pdf',nm:'Progressive overload guide',desc:'How to get stronger within existing sessions without adding more days.'},
+  {cat:'milestones',type:'template',nm:'12-week progress report',desc:'Visual report at every 12-wk review. Data + photos + reflections + recalibration.'},
+  {cat:'milestones',type:'email',nm:'30-day "Distance Travelled" note',desc:'Personal letter at day 30. Specific, warm, in your voice. First major emotional touchpoint.'},
+  {cat:'milestones',type:'email',nm:'12-week review recap',desc:'Post-session summary that closes one chapter and opens the next.'},
+  {cat:'milestones',type:'pdf',nm:'90-day reflection booklet',desc:'Guided journal. Client fills out and brings to the 90-day review session.'},
+  {cat:'milestones',type:'email',nm:'One-year anniversary letter',desc:"The most important letter you'll write all year. Don't skip this one."},
+  {cat:'coachrx',type:'template',nm:'Monday big pulse template',desc:"The Monday opener. Customize with this week's focus and a forward-looking question. Send by 10 AM."},
+  {cat:'coachrx',type:'template',nm:'Wednesday nuanced touch pack',desc:'8 short reply frameworks for mid-week CoachRx replies. Specific, warm, brief.'},
+  {cat:'coachrx',type:'template',nm:'Friday big pulse template',desc:'The Friday closer. Data reflection + weekend strategy + recognition for what was hard.'},
+  {cat:'coachrx',type:'template',nm:'Automated check-in customizer',desc:'Library of prompt variants for the weekly automated check-in. Edit per client, every single week.'},
+  {cat:'coachrx',type:'template',nm:'Voice note prompts',desc:'Short scripts for the surprise voice notes clients screenshot and share with friends.'},
+  {cat:'coachrx',type:'template',nm:'Gentle re-engagement pulse',desc:"For when a client's CoachRx logs go quiet. Warm, no guilt, opens the door."},
+  {cat:'protocols',type:'protocol',nm:'Plateau protocol',desc:'The 6-step process when results stall. Sequence matters — follow it.'},
+  {cat:'protocols',type:'protocol',nm:'Quiet client protocol',desc:'When CoachRx logs go silent. How to re-engage without making them feel guilty.'},
+  {cat:'protocols',type:'protocol',nm:'Hard disclosure protocol',desc:'When a client shares something heavy. Scope, response, follow-up.'},
+  {cat:'protocols',type:'protocol',nm:'Cadence change protocol',desc:'Biweekly → monthly transition. When to make it, how to frame it as a graduation.'},
+  {cat:'protocols',type:'protocol',nm:'Pause / departure protocol',desc:'When a client wants to pause or leave. How to close the chapter well.'},
+  {cat:'protocols',type:'protocol',nm:'12-week review protocol',desc:'How to prepare, present, and pivot at the quarterly review. The re-aiming conversation.'}
+];
+
+function renderResources() {
+  const f = ST.resCat==='all' ? RESOURCES : RESOURCES.filter(r=>r.cat===ST.resCat);
+  document.getElementById('res-count').textContent = RESOURCES.length;
+  document.getElementById('res-grid').innerHTML = f.map(r => `
+    <div class="res-card ${r.type}">
+      <span class="res-type">${r.type}</span>
+      <div class="res-nm">${r.nm}</div>
+      <div class="res-desc">${r.desc}</div>
+      <div class="res-acts">
+        <button class="rb" onclick="toast('Preview coming — upload docs to enable')">Preview</button>
+        <button class="rb p" onclick="toast('Send feature coming — link your documents')">Send to client</button>
+      </div>
+    </div>`).join('');
+}
+document.querySelectorAll('.res-tab').forEach(t => t.addEventListener('click', () => {
+  ST.resCat = t.dataset.cat;
+  document.querySelectorAll('.res-tab').forEach(x=>x.classList.remove('on'));
+  t.classList.add('on'); renderResources();
+}));
+
+// ════════ INTAKE STEPS ════════
+document.querySelectorAll('.istep').forEach(b => b.addEventListener('click', () => goS(+b.dataset.s)));
+function goS(idx) {
+  document.getElementById('is-'+ST.iSec).classList.remove('on');
+  document.querySelectorAll('.istep')[ST.iSec].classList.remove('on');
+  if (idx > ST.iSec) document.querySelectorAll('.istep')[ST.iSec].classList.add('done');
+  ST.iSec = idx;
+  document.getElementById('is-'+idx).classList.add('on');
+  document.querySelectorAll('.istep').forEach((b,i) => b.classList.toggle('on', i===idx));
+  document.getElementById('ipf').style.width = ((idx+1)/5*100)+'%';
+  if (idx===4) buildReview();
+  window.scrollTo(0,0);
+}
+
+document.querySelectorAll('#sup-tags .tag').forEach(t => t.addEventListener('click', () => {
+  t.classList.toggle('sel');
+  t.classList.contains('sel') ? ST.supps.add(t.dataset.v) : ST.supps.delete(t.dataset.v);
+}));
+document.querySelectorAll('#alt-tags .tag').forEach(t => t.addEventListener('click', () => {
+  t.classList.toggle('sel');
+  t.classList.contains('sel') ? ST.alts.add(t.dataset.v) : ST.alts.delete(t.dataset.v);
+}));
+document.querySelectorAll('#alt-tags .tag.sel').forEach(t => ST.alts.add(t.dataset.v));
+
+function collectData() {
+  const sp = [...ST.supps]; const sx=gv('supx'); if(sx) sp.push(sx);
+  return {
+    fn:gv('fn'), ln:gv('ln'), dt:gv('dt'), age:gv('age'), sex:gv('sex'), ht:gv('ht'),
+    wt:gv('wt'), tdee:gv('tdee'), gwt:gv('gwt'), act:gv('act'), td:gv('td'), med:gv('med'),
+    goal:gv('goal'), succ:gv('succ'), str:gv('str'), cal:gv('cal'), caln:gv('caln'),
+    pro:gv('pro'), carb:gv('carb'), fat:gv('fat'), macr:gv('macr'), meal:gv('meal'), tool:gv('tool'),
+    ttype:gv('ttype'), tfreq:gv('tfreq'), trec:gv('trec'), z2:gv('z2'),
+    pre:gv('pre'), post:gv('post'), aft:gv('aft'), eve:gv('eve'),
+    hyd:gv('hyd'), supps:sp, slq:gv('slq'), slh:gv('slh'),
+    stress:gv('stress'), crav:gv('crav'), alts:[...ST.alts], cravn:gv('cravn'),
+    m1:gv('m1'), m1d:gv('m1d'), m2:gv('m2'), m2d:gv('m2d'), m3:gv('m3'), m3d:gv('m3d'),
+    notes:gv('notes')
+  };
+}
+
+function buildReview() {
+  const d = collectData();
+  const nm = (d.fn+' '+d.ln).trim() || 'Client';
+  document.getElementById('rv-grid').innerHTML = `
+    <div class="rv-card"><div class="rv-lbl">Client</div><div class="rv-val">${nm}</div><div class="rv-sub">${[d.age?d.age+' yrs':'', d.sex, d.ht, d.wt].filter(Boolean).join(' · ')}</div></div>
+    <div class="rv-card"><div class="rv-lbl">Primary goal</div><div class="rv-sub">${(d.goal||'Not entered').substring(0,120)}</div></div>
+    <div class="rv-card"><div class="rv-lbl">Nutrition targets</div><div class="rv-val">${d.cal||'—'}</div><div class="rv-sub">P: ${d.pro||'—'} · C: ${d.carb||'—'} · F: ${d.fat||'—'}</div></div>
+    <div class="rv-card"><div class="rv-lbl">Training</div><div class="rv-val">${d.ttype||'—'}</div><div class="rv-sub">${d.tfreq||'—'}</div></div>
+    <div class="rv-card"><div class="rv-lbl">Sleep</div><div class="rv-val">${d.slh?d.slh+' hrs':'—'}</div><div class="rv-sub">${d.slq?d.slq.split('(')[0].trim():'—'}</div></div>
+    <div class="rv-card"><div class="rv-lbl">Supplements</div><div class="rv-sub">${d.supps.length?d.supps.join(', '):'None selected'}</div></div>
+    <div class="rv-card"><div class="rv-lbl">Week 1 focus</div><div class="rv-sub">${[d.m1,d.m2,d.m3].filter(Boolean).join(' · ')||'—'}</div></div>
+    <div class="rv-card"><div class="rv-lbl">Craving alternatives</div><div class="rv-sub">${d.alts.length?d.alts.join(', '):'None selected'}</div></div>`;
+}
+
+// ════════ GENERATE REPORT (no API — formats coach's own input) ════════
+document.getElementById('gen-btn').addEventListener('click', generateReport);
+
+function generateReport() {
+  const d = collectData();
+  if (!d.fn) { toast('Enter the client\'s first name first'); return; }
+  const nm = (d.fn+' '+d.ln).trim();
+  const dt = d.dt
+    ? new Date(d.dt+'T12:00:00').toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'})
+    : new Date().toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'});
+
+  document.getElementById('rpt-preview').innerHTML = buildReportHTML(d, nm, dt);
+  document.getElementById('rpt-out').style.display = 'block';
+  document.getElementById('gen-ctrl').style.display = 'none';
+  document.getElementById('dl-btn').onclick = () => downloadPDF(d, nm, dt);
+  toast('Report ready — download below ✓');
+}
+
+function buildReportHTML(d, nm, dt) {
+  const actShort = d.act ? d.act.split('(')[0].trim() : '—';
+  return `
+  <div class="rpt-hdr">
+    <div class="rpt-hdr-brand">Function Health Club · Coach Portal</div>
+    <div class="rpt-eye">Health Coaching Report · Initial Assessment</div>
+    <div class="rpt-nm">Welcome, ${d.fn}.</div>
+    <div class="rpt-date-line">Prepared by your Function Health Club Coach · ${dt}</div>
+    <div class="rpt-stats">
+      <div class="rpt-sc"><div class="rpt-sl">Height</div><div class="rpt-sv">${d.ht||'—'}</div></div>
+      <div class="rpt-sc"><div class="rpt-sl">Weight</div><div class="rpt-sv">${d.wt||'—'}</div></div>
+      <div class="rpt-sc"><div class="rpt-sl">Est. TDEE</div><div class="rpt-sv">${d.tdee?d.tdee+' cal':'—'}</div></div>
+      <div class="rpt-sc"><div class="rpt-sl">Activity level</div><div class="rpt-sv" style="font-size:12px">${actShort}</div></div>
+    </div>
+  </div>
+
+  <div class="rpt-body">
+
+    ${d.goal ? `
+    <div class="rpt-sec">
+      <div class="rpt-sec-label">Your goal</div>
+      <div class="rpt-sec-title">${d.goal}</div>
+      ${d.succ ? `<div class="rpt-text" style="margin-top:6px"><strong>What success looks like:</strong> ${d.succ}</div>` : ''}
+      ${d.str ? `<div class="strengths-box"><strong style="display:block;font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--gd);margin-bottom:4px">Strengths already in place</strong>${d.str}</div>` : ''}
+    </div>` : ''}
+
+    ${d.cal ? `
+    <div class="rpt-sec">
+      <div class="rpt-sec-label">Energy input · Nutrition strategy</div>
+      <div class="info-box" style="margin-bottom:12px">
+        <div class="info-box-label">Daily calorie target</div>
+        <div class="info-box-val">${d.cal}</div>
+        ${d.caln ? `<div class="rpt-text">${d.caln}</div>` : ''}
+      </div>
+      ${(d.pro||d.carb||d.fat) ? `
+      <div class="mac-row">
+        <div class="mac" style="--mc:var(--orange)"><div class="mac-l" style="color:var(--orange)">Protein</div><div class="mac-v">${d.pro||'—'}</div><div class="mac-n">Primary driver of muscle preservation and recomposition.</div></div>
+        <div class="mac" style="--mc:var(--amber)"><div class="mac-l" style="color:var(--amber)">Carbohydrates</div><div class="mac-v">${d.carb||'—'}</div><div class="mac-n">Primary fuel for training intensity and glycogen recovery.</div></div>
+        <div class="mac" style="--mc:var(--g)"><div class="mac-l" style="color:var(--gd)">Healthy fats</div><div class="mac-v">${d.fat||'—'}</div><div class="mac-n">Essential for hormone production and appetite regulation.</div></div>
+      </div>` : ''}
+      ${d.macr ? `<div class="rpt-text" style="margin-top:10px"><strong>Why these numbers:</strong> ${d.macr}</div>` : ''}
+      ${d.meal ? `<div class="rpt-text" style="margin-top:10px"><strong>Meal architecture:</strong> ${d.meal}</div>` : ''}
+      ${d.tool ? `<div class="tool-box"><div class="tool-box-label">Practical tool</div>${d.tool}</div>` : ''}
+    </div>` : ''}
+
+    ${(d.pre||d.post||d.aft||d.eve) ? `
+    <div class="rpt-sec">
+      <div class="rpt-sec-label">Protein timing</div>
+      ${d.pre ? `<div class="timing-row"><div class="timing-label">Pre-workout</div><div class="rpt-text">${d.pre}</div></div>` : ''}
+      ${d.post ? `<div class="timing-row"><div class="timing-label">Post-workout</div><div class="rpt-text">${d.post}</div></div>` : ''}
+      ${d.aft ? `<div class="timing-row"><div class="timing-label">~3:30 PM bridge</div><div class="rpt-text">${d.aft}</div></div>` : ''}
+      ${d.eve ? `<div class="timing-row"><div class="timing-label">Evening strategy</div><div class="rpt-text">${d.eve}</div></div>` : ''}
+    </div>` : ''}
+
+    ${(d.ttype||d.trec||d.z2) ? `
+    <div class="rpt-sec">
+      <div class="rpt-sec-label">Energy output · Training & movement</div>
+      <div class="train-grid">
+        ${(d.ttype||d.trec) ? `<div class="train-card" style="--tc:var(--orange)"><div class="train-card-label" style="color:var(--orange)">Primary training</div><div class="rpt-text">${d.ttype?'<strong>'+d.ttype+(d.tfreq?' · '+d.tfreq:'')+'</strong><br/>':''}${d.trec||''}</div></div>` : ''}
+        ${d.z2 ? `<div class="train-card" style="--tc:var(--g)"><div class="train-card-label" style="color:var(--gd)">Zone 2 & recovery</div><div class="rpt-text">${d.z2}</div></div>` : ''}
+      </div>
+      ${(d.hyd||d.supps.length) ? `
+      <div class="supp-box">
+        <div class="supp-label">Hydration & supplements</div>
+        ${d.hyd ? `<div class="rpt-text" style="margin-bottom:6px">${d.hyd}</div>` : ''}
+        ${d.supps.length ? `<div style="font-size:12px;color:var(--dks)">${d.supps.join(' · ')}</div>` : ''}
+      </div>` : ''}
+    </div>` : ''}
+
+    ${(d.crav||d.alts.length) ? `
+    <div class="rpt-sec">
+      <div class="rpt-sec-label">Managing cravings</div>
+      ${d.crav ? `<div class="rpt-text" style="margin-bottom:10px"><strong>Your pattern:</strong> ${d.crav}</div>` : ''}
+      ${d.cravn ? `<div class="rpt-text" style="margin-bottom:10px">${d.cravn}</div>` : ''}
+      ${d.alts.length ? `<div class="alt-pills">${d.alts.map(a=>'<span class="alt-pill">'+a+'</span>').join('')}</div>` : ''}
+    </div>` : ''}
+
+    ${(d.m1||d.m2||d.m3) ? `
+    <div class="rpt-sec">
+      <div class="rpt-sec-label">Week 1 focus · Your 3 daily check-ins</div>
+      <div class="rpt-text" style="margin-bottom:4px">These are signals, not scores. Track them daily and bring the data to your next session.</div>
+      <div class="metric-grid">
+        ${d.m1 ? `<div class="metric-card"><div class="metric-num">01</div><div class="metric-title">${d.m1}</div><div class="metric-desc">${d.m1d||''}</div></div>` : ''}
+        ${d.m2 ? `<div class="metric-card"><div class="metric-num">02</div><div class="metric-title">${d.m2}</div><div class="metric-desc">${d.m2d||''}</div></div>` : ''}
+        ${d.m3 ? `<div class="metric-card"><div class="metric-num">03</div><div class="metric-title">${d.m3}</div><div class="metric-desc">${d.m3d||''}</div></div>` : ''}
+      </div>
+    </div>` : ''}
+
+    ${(d.stress||d.slq) ? `
+    <div class="rpt-sec">
+      <div class="rpt-sec-label">Lifestyle snapshot</div>
+      ${d.slq ? `<div class="rpt-text" style="margin-bottom:8px"><strong>Sleep:</strong> ${d.slq}${d.slh?' · '+d.slh+' hrs/night':''}</div>` : ''}
+      ${d.stress ? `<div class="rpt-text"><strong>Current stressors:</strong> ${d.stress}</div>` : ''}
+      ${d.med ? `<div class="rpt-text" style="margin-top:8px"><strong>Medical notes:</strong> ${d.med}</div>` : ''}
+    </div>` : ''}
+
+    <div class="closing-box">
+      <div class="closing-eye">A note from your coach</div>
+      <div class="closing-txt">${d.notes||'It was a pleasure sitting down with you today. The commitment you\'ve shown by being here is the first step — and it\'s the most important one. I\'m in your corner every step of the way.'}</div>
+      <div class="closing-ft">Function Health Club · Unleash Your Inner Strength · Vancouver & Port Coquitlam</div>
+    </div>
+
+  </div>`;
+}
+
+function resetRpt() {
+  document.getElementById('rpt-out').style.display = 'none';
+  document.getElementById('gen-ctrl').style.display = 'block';
+}
+
+// ════════ PDF DOWNLOAD ════════
+async function downloadPDF(d, nm, dt) {
+  const btn = document.getElementById('dl-btn');
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> Generating...';
+  try {
+    const {jsPDF} = window.jspdf;
+    const doc = new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
+    const W=210, M=18, CW=W-M*2; let y=0;
+    const G=[90,190,60], DK=[26,43,60], WH=[255,255,255], GD=[61,138,40];
+    const DKS=[74,85,104], OR=[230,81,0], AM=[245,127,23], GL=[242,251,240];
+
+    // Header
+    doc.setFillColor(...DK); doc.rect(0,0,W,72,'F');
+    doc.setFillColor(...G); doc.rect(0,68,W,4,'F');
+    doc.setTextColor(...G); doc.setFontSize(7); doc.setFont('helvetica','bold');
+    doc.text('FUNCTION HEALTH CLUB  ·  HEALTH COACHING REPORT  ·  INITIAL ASSESSMENT', M, 12);
+    doc.setTextColor(...WH); doc.setFontSize(21); doc.text('Welcome, '+d.fn+'.', M, 27);
+    doc.setFontSize(9); doc.setFont('helvetica','normal');
+    doc.setTextColor(150,180,140); doc.text('Prepared by your Function Health Club Coach  ·  '+dt, M, 35);
+
+    // Stats row
+    const stats=[['HEIGHT',d.ht||'—'],['WEIGHT',d.wt||'—'],['EST. TDEE',d.tdee?d.tdee+' cal':'—'],['ACTIVITY',d.act?d.act.split('(')[0].trim():'—']];
+    const sw=CW/4;
+    stats.forEach(([l,v],i)=>{
+      const x=M+i*sw;
+      doc.setFontSize(7); doc.setTextColor(...G); doc.setFont('helvetica','bold'); doc.text(l,x,51);
+      doc.setFontSize(10); doc.setTextColor(...WH); doc.text(String(v).substring(0,18),x,60);
+    });
+    y=80;
+
+    function chkPage(){if(y>270){doc.addPage();y=20;}}
+    function divider(){chkPage();doc.setDrawColor(...G);doc.setLineWidth(.3);doc.line(M,y,W-M,y);doc.setLineWidth(.2);y+=6;}
+    function label(txt){chkPage();doc.setFontSize(7);doc.setTextColor(...G);doc.setFont('helvetica','bold');doc.text(txt.toUpperCase(),M,y);y+=5;}
+    function heading(txt){chkPage();doc.setFontSize(13);doc.setTextColor(...DK);doc.setFont('helvetica','bold');const lines=doc.splitTextToSize(txt,CW);lines.forEach(l=>{chkPage();doc.text(l,M,y);y+=6;});}
+    function body(txt){if(!txt)return;chkPage();doc.setFontSize(10);doc.setTextColor(...DKS);doc.setFont('helvetica','normal');const lines=doc.splitTextToSize(txt,CW);lines.forEach(l=>{chkPage();doc.text(l,M,y);y+=5;});y+=2;}
+    function keyval(key,val){if(!val)return;chkPage();doc.setFontSize(9);doc.setTextColor(...DK);doc.setFont('helvetica','bold');doc.text(key+': ',M,y);doc.setFont('helvetica','normal');doc.setTextColor(...DKS);const lines=doc.splitTextToSize(val,CW-30);doc.text(lines[0],M+doc.getTextWidth(key+': '),y);if(lines.length>1){y+=5;lines.slice(1).forEach(l=>{chkPage();doc.text(l,M,y);y+=5;});}else{y+=5;}}
+    function greenBox(lbl,txt){
+      if(!txt)return;chkPage();
+      doc.setFillColor(...GL);
+      const lines=doc.splitTextToSize(txt,CW-12);
+      const h=lines.length*5+12;
+      doc.roundedRect(M,y,CW,h,2,2,'F');
+      doc.setFillColor(...G);doc.rect(M,y,3,h,'F');
+      doc.setFontSize(7);doc.setTextColor(...GD);doc.setFont('helvetica','bold');doc.text(lbl.toUpperCase(),M+7,y+7);
+      doc.setFontSize(10);doc.setTextColor(...DKS);doc.setFont('helvetica','normal');
+      lines.forEach((l,i)=>doc.text(l,M+7,y+12+i*5));
+      y+=h+6;
+    }
+    function macRow(p,c,f){
+      chkPage();
+      [[OR,'PROTEIN',p],[AM,'CARBOHYDRATES',c],[G,'HEALTHY FATS',f]].forEach(([col,lbl,val],i)=>{
+        const x=M+i*(CW/3+1.5);
+        doc.setFillColor(...GL);doc.roundedRect(x,y,CW/3-1,22,2,2,'F');
+        doc.setFillColor(...col);doc.rect(x,y,CW/3-1,2.5,'F');
+        doc.setFontSize(7);doc.setTextColor(...col);doc.setFont('helvetica','bold');doc.text(lbl,x+4,y+8);
+        doc.setFontSize(12);doc.setTextColor(...DK);doc.text(val||'—',x+4,y+17);
+      });
+      y+=28;
+    }
+    function timingRow(lbl,txt){
+      if(!txt)return;chkPage();
+      doc.setFontSize(8);doc.setTextColor(...OR);doc.setFont('helvetica','bold');doc.text(lbl,M,y);y+=4;
+      body(txt);
+    }
+    function metricBox(num,title,desc){
+      const x=M+(num-1)*(CW/3+2);
+      doc.setFillColor(...GL);doc.roundedRect(x,y,CW/3,24,2,2,'F');
+      doc.setFillColor(...G);doc.rect(x,y,CW/3,2.5,'F');
+      doc.setFontSize(14);doc.setTextColor(...G);doc.setFont('helvetica','bold');doc.text(String(num).padStart(2,'0'),x+4,y+12);
+      doc.setFontSize(8);doc.setTextColor(...DK);doc.splitTextToSize(title,CW/3-8).forEach((l,i)=>doc.text(l,x+4,y+17+i*4));
+    }
+
+    // ── CONTENT ──
+    if(d.goal){
+      label('YOUR GOAL');
+      heading(d.goal);
+      if(d.succ){doc.setFontSize(9);doc.setTextColor(...DK);doc.setFont('helvetica','bold');doc.text('Success looks like:',M,y);y+=4;body(d.succ);}
+      greenBox('Strengths already in place', d.str);
+      divider();
+    }
+
+    if(d.cal){
+      label('ENERGY INPUT · NUTRITION STRATEGY');
+      // calorie box
+      chkPage();
+      doc.setFillColor(...GL);doc.roundedRect(M,y,CW,22,2,2,'F');
+      doc.setFontSize(7);doc.setTextColor(...GD);doc.setFont('helvetica','bold');doc.text('DAILY CALORIE TARGET',M+6,y+7);
+      doc.setFontSize(16);doc.setTextColor(...DK);doc.text(d.cal,M+6,y+16);
+      y+=28;
+      if(d.caln)body(d.caln);
+      macRow(d.pro,d.carb,d.fat);
+      if(d.macr){doc.setFontSize(9);doc.setTextColor(...DK);doc.setFont('helvetica','bold');doc.text('Why these numbers:',M,y);y+=4;body(d.macr);}
+      if(d.meal){doc.setFontSize(9);doc.setTextColor(...DK);doc.setFont('helvetica','bold');doc.text('Meal architecture:',M,y);y+=4;body(d.meal);}
+      if(d.tool){
+        chkPage();
+        doc.setFillColor(255,248,225);const tlines=doc.splitTextToSize(d.tool,CW-12);const th=tlines.length*5+11;
+        doc.roundedRect(M,y,CW,th,2,2,'F');doc.setFillColor(...AM);doc.rect(M,y,3,th,'F');
+        doc.setFontSize(7);doc.setTextColor(...AM);doc.setFont('helvetica','bold');doc.text('PRACTICAL TOOL',M+7,y+7);
+        doc.setFontSize(10);doc.setTextColor(...DKS);doc.setFont('helvetica','normal');tlines.forEach((l,i)=>doc.text(l,M+7,y+12+i*5));
+        y+=th+6;
+      }
+      divider();
+    }
+
+    if(d.pre||d.post||d.aft||d.eve){
+      label('PROTEIN TIMING');
+      timingRow('Pre-workout',d.pre);
+      timingRow('Post-workout',d.post);
+      timingRow('~3:30 PM bridge',d.aft);
+      timingRow('Evening strategy',d.eve);
+      divider();
+    }
+
+    if(d.ttype||d.trec||d.z2){
+      label('ENERGY OUTPUT · TRAINING & MOVEMENT');
+      if(d.ttype||d.trec){
+        chkPage();
+        doc.setFillColor(...GL);const tcard_h=42;doc.roundedRect(M,y,CW/2-3,tcard_h,2,2,'F');
+        doc.setFillColor(...OR);doc.rect(M,y,CW/2-3,2.5,'F');
+        doc.setFontSize(7);doc.setTextColor(...OR);doc.setFont('helvetica','bold');doc.text('PRIMARY TRAINING',M+4,y+8);
+        if(d.ttype){doc.setFontSize(9);doc.setTextColor(...DK);doc.text(d.ttype+(d.tfreq?' · '+d.tfreq:''),M+4,y+15);}
+        if(d.trec){doc.setFontSize(9);doc.setTextColor(...DKS);doc.setFont('helvetica','normal');const trl=doc.splitTextToSize(d.trec,CW/2-10);trl.slice(0,3).forEach((l,i)=>doc.text(l,M+4,y+21+i*4.5));}
+        if(d.z2){
+          doc.setFillColor(...GL);doc.roundedRect(M+CW/2+3,y,CW/2-3,tcard_h,2,2,'F');
+          doc.setFillColor(...G);doc.rect(M+CW/2+3,y,CW/2-3,2.5,'F');
+          doc.setFontSize(7);doc.setTextColor(...GD);doc.setFont('helvetica','bold');doc.text('ZONE 2 & RECOVERY',M+CW/2+7,y+8);
+          doc.setFontSize(9);doc.setTextColor(...DKS);doc.setFont('helvetica','normal');const z2l=doc.splitTextToSize(d.z2,CW/2-10);z2l.slice(0,4).forEach((l,i)=>doc.text(l,M+CW/2+7,y+15+i*4.5));
+        }
+        y+=tcard_h+6;
+      }
+      if(d.hyd||d.supps.length){
+        greenBox('Hydration & supplements', [d.hyd, d.supps.join(' · ')].filter(Boolean).join('\n'));
+      }
+      divider();
+    }
+
+    if(d.crav||d.alts.length){
+      label('MANAGING CRAVINGS');
+      if(d.crav)keyval('Your pattern',d.crav);
+      if(d.cravn)body(d.cravn);
+      if(d.alts.length){
+        chkPage();
+        doc.setFontSize(8);doc.setTextColor(...GD);doc.setFont('helvetica','bold');doc.text('APPROVED ALTERNATIVES',M,y);y+=5;
+        doc.setFontSize(10);doc.setTextColor(...DKS);doc.setFont('helvetica','normal');doc.text(d.alts.join('  ·  '),M,y);y+=8;
+      }
+      divider();
+    }
+
+    if(d.m1||d.m2||d.m3){
+      label('WEEK 1 FOCUS · YOUR 3 DAILY CHECK-INS');
+      body('These are signals, not scores. Track them daily and bring the data to your next session.');
+      chkPage();
+      if(d.m1)metricBox(1,d.m1,d.m1d);
+      if(d.m2)metricBox(2,d.m2,d.m2d);
+      if(d.m3)metricBox(3,d.m3,d.m3d);
+      y+=32;
+      divider();
+    }
+
+    if(d.slq||d.stress){
+      label('LIFESTYLE SNAPSHOT');
+      if(d.slq)keyval('Sleep',d.slq+(d.slh?' · '+d.slh+' hrs/night':''));
+      if(d.stress)keyval('Current stressors',d.stress);
+      if(d.med)keyval('Medical notes',d.med);
+      divider();
+    }
+
+    // Closing
+    chkPage();
+    const closingTxt = d.notes||"It was a pleasure sitting down with you today. The commitment you've shown by being here is the first step — and it's the most important one. I'm in your corner every step of the way.";
+    const closingLines = doc.splitTextToSize('"'+closingTxt+'"', CW-14);
+    const closingH = closingLines.length*5.5+26;
+    doc.setFillColor(...DK);doc.roundedRect(M,y,CW,closingH,3,3,'F');
+    doc.setFillColor(...G);doc.rect(M,y,4,closingH,'F');
+    doc.setFontSize(7);doc.setTextColor(...G);doc.setFont('helvetica','bold');doc.text('A NOTE FROM YOUR COACH',M+9,y+10);
+    doc.setFontSize(11);doc.setTextColor(...WH);doc.setFont('helvetica','italic');
+    closingLines.forEach((l,i)=>doc.text(l,M+9,y+18+i*5.5));
+    y+=closingH+10;
+    doc.setFontSize(8);doc.setTextColor(...G);doc.setFont('helvetica','bold');doc.text('UNLEASH YOUR INNER STRENGTH',M,y);
+    doc.setTextColor(120,140,110);doc.setFont('helvetica','normal');doc.text('  ·  Function Health Club · Vancouver & Port Coquitlam',M+52,y);
+
+    doc.save('FHC_Assessment_'+nm.replace(/\s+/g,'_')+'_'+new Date().toISOString().slice(0,10)+'.pdf');
+    toast('PDF downloaded ✓');
+
+  } catch(err) {
+    console.error(err); toast('PDF error — please try again');
+  } finally {
+    btn.disabled=false; btn.innerHTML='<i class="ti ti-download"></i> Download PDF';
+  }
+}
+
+// ════════ BOOT ════════
+(function init(){
+  loadSaved();
+  document.getElementById('dt').value = new Date().toISOString().slice(0,10);
+  renderTracker();
+  renderResources();
+})();
+</script>
+</body>
+</html>
